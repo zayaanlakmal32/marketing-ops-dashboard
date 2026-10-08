@@ -370,7 +370,7 @@ function viewUpsell(){
       '<label class="f" for="us-'+c.id+'">Status<select id="us-'+c.id+'" name="status">'+["planned","pitched","won","declined"].map(s=>'<option value="'+s+'"'+(cp.status===s?" selected":"")+'>'+s[0].toUpperCase()+s.slice(1)+'</option>').join("")+'</select></label>'+
       '<label class="f wide" for="un-'+c.id+'">Note<input id="un-'+c.id+'" name="note" value="'+esc(cp.note||"")+'" placeholder="From the strat check-in"></label>'+
       '<button type="submit" class="primary"'+(S.upsellOn?"":" disabled")+'>Save</button>'+
-      (cp.pageId?'<button type="button" class="ghost danger" data-clear="'+esc(cp.pageId)+'"'+(S.upsellOn?"":" disabled")+'>Remove checkpoint</button>':'')+
+      (cp.nextDate?'<button type="button" class="ghost danger" data-clear="'+esc(c.id)+'"'+(S.upsellOn?"":" disabled")+'>Remove checkpoint</button>':'')+
       '</form></details></td></tr>';
   });
   h+='</tbody></table></div></section>';
@@ -456,7 +456,7 @@ document.addEventListener("click",async e=>{
   if(clr&&S.upsellOn){
     if(!clr.classList.contains("armed")){clr.classList.add("armed");clr.textContent="Confirm remove";setTimeout(()=>{if(clr.isConnected){clr.classList.remove("armed");clr.textContent="Remove checkpoint"}},3000);return}
     clr.disabled=true;
-    try{await api("/api/upsell?id="+encodeURIComponent(clr.dataset.clear),{method:"DELETE"});toast("Checkpoint removed");loadAll(true)}catch(x){toast("Couldn't remove: "+x.message);clr.disabled=false}
+    try{await api("/api/upsell?clientId="+encodeURIComponent(clr.dataset.clear),{method:"DELETE"});toast("Checkpoint removed");loadAll(true)}catch(x){toast("Couldn't remove: "+x.message);clr.disabled=false}
     return;
   }
   const del=e.target.closest("[data-del]");
