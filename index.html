@@ -369,7 +369,9 @@ function viewUpsell(){
       '<label class="f" for="uo-'+c.id+'">Offer<select id="uo-'+c.id+'" name="offer">'+addonOptions(cp.offer)+'</select></label>'+
       '<label class="f" for="us-'+c.id+'">Status<select id="us-'+c.id+'" name="status">'+["planned","pitched","won","declined"].map(s=>'<option value="'+s+'"'+(cp.status===s?" selected":"")+'>'+s[0].toUpperCase()+s.slice(1)+'</option>').join("")+'</select></label>'+
       '<label class="f wide" for="un-'+c.id+'">Note<input id="un-'+c.id+'" name="note" value="'+esc(cp.note||"")+'" placeholder="From the strat check-in"></label>'+
-      '<button type="submit" class="primary"'+(S.upsellOn?"":" disabled")+'>Save</button></form></details></td></tr>';
+      '<button type="submit" class="primary"'+(S.upsellOn?"":" disabled")+'>Save</button>'+
+      (cp.pageId?'<button type="button" class="ghost danger" data-clear="'+esc(cp.pageId)+'"'+(S.upsellOn?"":" disabled")+'>Remove checkpoint</button>':'')+
+      '</form></details></td></tr>';
   });
   h+='</tbody></table></div></section>';
   return h;
@@ -437,7 +439,7 @@ function render(){
   const views={today:viewToday,funnels:viewFunnels,upsell:viewUpsell,ads:viewAds,briefs:viewBriefs};
   const active=document.activeElement&&document.activeElement.id;
   const openDetails=[...document.querySelectorAll("details.edit[open] form")].map(f=>f.dataset.upsell);
-  const kept={};app.querySelectorAll("form input[id],form select[id]").forEach(el=>{kept[el.id]=el.value});
+  const kept={};app.querySelectorAll("#adform input[id],#adform select[id]").forEach(el=>{kept[el.id]=el.value});
   app.innerHTML=(views[UI.tab]||viewToday)();
   Object.keys(kept).forEach(id=>{const el=document.getElementById(id);if(el)el.value=kept[id]});
   openDetails.forEach(id=>{const f=document.querySelector('form[data-upsell="'+id+'"]');if(f)f.closest("details").open=true});
@@ -450,6 +452,13 @@ document.addEventListener("click",async e=>{
   const go=e.target.closest("[data-tab-go]");if(go){setTab(go.dataset.tabGo);return}
   if(e.target.closest('[data-act="reload"]')){loadAll(true);return}
   const cell=e.target.closest("[data-cell]");if(cell){UI.selCell=UI.selCell===cell.dataset.cell?null:cell.dataset.cell;render();return}
+  const clr=e.target.closest("[data-clear]");
+  if(clr&&S.upsellOn){
+    if(!clr.classList.contains("armed")){clr.classList.add("armed");clr.textContent="Confirm remove";setTimeout(()=>{if(clr.isConnected){clr.classList.remove("armed");clr.textContent="Remove checkpoint"}},3000);return}
+    clr.disabled=true;
+    try{await api("/api/upsell?id="+encodeURIComponent(clr.dataset.clear),{method:"DELETE"});toast("Checkpoint removed");loadAll(true)}catch(x){toast("Couldn't remove: "+x.message);clr.disabled=false}
+    return;
+  }
   const del=e.target.closest("[data-del]");
   if(del&&S.adsOn){
     if(!del.classList.contains("armed")){del.classList.add("armed");del.textContent="Confirm";setTimeout(()=>{if(del.isConnected){del.classList.remove("armed");del.textContent="Delete"}},3000);return}
