@@ -8,7 +8,8 @@ Dashboard for Oshara. Reads Notion live through a small Vercel proxy, so the Not
 - `api/data.js`: reads Project Tracker, PM Engine Projects + Tasks and the Strategy Board
 - `api/ads.js`: saves and deletes ad entries (needs `AD_LOG_DS_ID`)
 - `api/upsell.js`: saves upsell checkpoints (needs `UPSELL_DS_ID`)
-- `api/_notion.js`: shared Notion helpers
+- `api/login.js`: sign in / sign out (Editoz email + team password)
+- `lib/notion.js`: shared Notion helpers and login checks
 
 ## Setup
 
@@ -20,7 +21,9 @@ Dashboard for Oshara. Reads Notion live through a small Vercel proxy, so the Not
 | Name | Required | What |
 |---|---|---|
 | `NOTION_TOKEN` | Yes | Your Notion integration secret |
-| `ACCESS_KEY` | No | A shared password for the dashboard. If set, the page asks for it once. |
+| `ACCESS_KEY` | Yes | The team password. People sign in with an @editozclub.com email + this password. Changing it signs everyone out. |
+| `ALLOWED_DOMAIN` | No | Email domain allowed to sign in. Defaults to `editozclub.com`. |
+| `SESSION_SECRET` | No | Extra secret for signing logins. Optional; one is derived automatically. |
 | `AD_LOG_DS_ID` | No | Turns on the Ads tab saving. Data source ID of the Ad Log database. |
 | `UPSELL_DS_ID` | No | Turns on upsell checkpoint saving. Data source ID of the Upsell Checkpoints database. |
 
