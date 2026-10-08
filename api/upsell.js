@@ -1,5 +1,5 @@
 // POST /api/upsell → create or update one client's upsell checkpoint in Notion
-// DELETE /api/upsell?id=<pageId> → move that checkpoint to Notion's trash
+// DELETE /api/upsell?clientId=<id> → move that client's checkpoint to Notion's trash
 const { notion, queryAll, send, checkKey, fail } = require("../lib/notion");
 
 const STATUSES = { planned: "Planned", pitched: "Pitched", won: "Won", declined: "Declined" };
@@ -11,10 +11,11 @@ module.exports = async (req, res) => {
   if (!ds) return send(res, 400, { error: "not_set_up", message: "Upsell checkpoints aren't switched on yet (UPSELL_DS_ID is not set)." });
   if (req.method === "DELETE") {
     try {
-      const id = String(req.query.id || "");
-      if (!/^[0-9a-f]{32}$/i.test(id)) return send(res, 400, { error: "bad_input", message: "Missing checkpoint id." });
-      await notion("/pages/" + id, "PATCH", { in_trash: true });
-      return send(res, 200, { ok: true });
+      const clientId = String(req.query.clientId || "");
+      if (!/^[0-9a-f]{32}$/i.test(clientId)) return send(res, 400, { error: "bad_input", message: "Missing client." });
+      const rows = await queryAll(ds, { filter: { property: "Client", relation: { contains: dashed(clientId) } } }, 1);
+      for (const row of rows) await notion("/pages/" + row.id, "PATCH", { in_trash: true });
+      return send(res, 200, { ok: true, removed: rows.length });
     } catch (e) {
       return fail(res, e);
     }
