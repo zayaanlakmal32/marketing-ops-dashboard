@@ -5,7 +5,8 @@ const dashed = id => id.replace(/^(.{8})(.{4})(.{4})(.{4})(.{12})$/, "$1-$2-$3-$
 const daysAgo = n => { const d = new Date(); d.setDate(d.getDate() - n); return d.toISOString().slice(0, 10); };
 
 module.exports = async (req, res) => {
-  if (!checkKey(req, res)) return;
+  const user = checkKey(req, res);
+  if (!user) return;
   try {
     const [trackerPages, projectPages, boardPages] = await Promise.all([
       queryAll(DS.tracker, { filter: { property: "Stage", select: { does_not_equal: "Offboarded" } } }, 5),
@@ -101,7 +102,7 @@ module.exports = async (req, res) => {
       });
     }
 
-    send(res, 200, { clients, projects, tasks, board, ads, upsell, loadedAt: new Date().toISOString() }, 30);
+    send(res, 200, { clients, projects, tasks, board, ads, upsell, user: user.email, loadedAt: new Date().toISOString() });
   } catch (e) {
     fail(res, e);
   }
