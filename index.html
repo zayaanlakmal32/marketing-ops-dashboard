@@ -40,6 +40,7 @@
   color-scheme:light;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html{background:var(--glow),linear-gradient(180deg,var(--bg) 0%,var(--bg-2) 100%);background-color:var(--bg);background-attachment:fixed;min-height:100%;transition:background-color .35s var(--ease)}
 body{margin:0;background:transparent;color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.55;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased;min-height:100vh;transition:background-color .35s var(--ease),color .35s var(--ease)}
 a{color:var(--blue);text-decoration-thickness:1px;text-underline-offset:3px}
@@ -187,6 +188,21 @@ details[open] .form{animation:pop .28s var(--ease) both}
 .links{display:flex;gap:12px;flex-wrap:wrap;font-size:12.5px;font-weight:500;margin-top:auto}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--surface-2);color:var(--ink);border:1px solid var(--line-strong);padding:10px 18px;border-radius:999px;font-weight:500;font-size:13px;z-index:60;box-shadow:0 18px 40px -18px rgba(0,0,0,.7);animation:toast .35s var(--ease) both}
 
+/* sign-in */
+body.locked nav.tabs,body.locked .user-chip{display:none}
+.user-chip{display:inline-flex;align-items:center;gap:4px;height:36px;padding:0 4px 0 12px;border-radius:10px;border:1px solid var(--line);background:var(--raise);font-size:12.5px;color:var(--ink-2);max-width:280px}
+.user-chip #who{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.user-chip .ghost{padding:5px 9px;font-size:12px}
+.login{min-height:calc(100vh - 140px);display:grid;place-items:center;padding-block:40px}
+.login-card{width:100%;max-width:400px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:32px 28px;box-shadow:var(--shadow),0 30px 80px -40px rgba(60,100,255,.45);display:flex;flex-direction:column;gap:6px;position:relative;overflow:hidden}
+.login-card::before{content:"";position:absolute;right:-60px;top:-40px;width:220px;aspect-ratio:1.4;background:linear-gradient(135deg,var(--blue),transparent);-webkit-mask:var(--logo) center/contain no-repeat;mask:var(--logo) center/contain no-repeat;opacity:.12;pointer-events:none}
+.login-card h1{margin:4px 0 2px}
+.mark.big{position:relative;width:46px;height:46px;border-radius:13px;overflow:hidden;background:linear-gradient(135deg,#2540E2,#5A82FF);box-shadow:0 10px 26px -8px #4C6FFF,inset 0 0 0 1px rgba(255,255,255,.18);margin-bottom:14px}
+.mark.big::before{content:"";position:absolute;inset:6px;background:#fff;-webkit-mask:var(--logo) center/contain no-repeat;mask:var(--logo) center/contain no-repeat}
+.login-form{display:flex;flex-direction:column;gap:14px;margin-top:16px}
+.login-form button{height:42px;font-size:14px}
+.login-err{margin:0;min-height:18px;font-size:12.5px;color:var(--bad)}
+
 /* motion */
 @keyframes sheen{0%{transform:translateX(-120%)}22%,100%{transform:translateX(120%)}}
 @keyframes drift{from{transform:translateY(0) rotate(0)}to{transform:translateY(8px) rotate(-3deg)}}
@@ -211,6 +227,7 @@ details[open] .form{animation:pop .28s var(--ease) both}
       <button data-tab="ads" type="button">Ads</button>
       <button data-tab="briefs" type="button">Briefs</button>
     </nav>
+    <span class="user-chip" hidden><span id="who"></span><button type="button" class="ghost" id="signout">Sign out</button></span>
     <button type="button" class="theme-btn" id="theme-btn" aria-label="Switch theme"></button>
   </div>
 </div></header>
@@ -264,10 +281,9 @@ function firstKey(name){const w=String(name||"").toLowerCase().replace(/[^a-z\s]
 function toast(msg){const r=$("#toast-root");r.innerHTML='<div class="toast" role="status">'+esc(msg)+'</div>';clearTimeout(toast._t);toast._t=setTimeout(()=>{r.innerHTML=""},2200)}
 
 /* ---------- data from /api (Notion token stays on the server) ---------- */
-let KEY=""; try{KEY=localStorage.getItem("mo2-key")||""}catch(e){}
 async function api(path,opts){
   opts=opts||{};
-  const res=await fetch(path,{method:opts.method||"GET",headers:Object.assign({"Content-Type":"application/json"},KEY?{"x-access-key":KEY}:{}),body:opts.body?JSON.stringify(opts.body):undefined});
+  const res=await fetch(path,{method:opts.method||"GET",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:opts.body?JSON.stringify(opts.body):undefined});
   let j={};try{j=await res.json()}catch(e){}
   if(!res.ok){const err=new Error(j.message||("Request failed ("+res.status+")"));err.code=j.error||res.status;throw err}
   return j;
@@ -281,12 +297,12 @@ async function loadAll(fresh){
   try{
     const d=await api("/api/data"+(fresh?"?fresh="+Date.now():""));
     S.clients=d.clients||[];S.projects=d.projects||[];S.tasks=d.tasks||[];S.board=d.board||[];
-    S.adsOn=Array.isArray(d.ads);S.upsellOn=!!d.upsell;
+    S.locked=false;S.user=d.user&&d.user!=="open"?d.user:null;S.adsOn=Array.isArray(d.ads);S.upsellOn=!!d.upsell;
     const names={};S.clients.forEach(c=>{names[c.id]=c.name});
     S.ads=(d.ads||[]).map(a=>Object.assign({},a,{clientName:names[a.clientId]||"Unknown client"}));
     S.upsell=d.upsell||{};
     S.loadedAt=Date.parse(d.loadedAt)||Date.now();
-  }catch(e){S.err.core=errText(e)}
+  }catch(e){if(e&&e.code==="locked"){S.locked=true;S.user=null}else S.err.core=errText(e)}
   S.loading=false;if(UI.animOnLoad){UI.anim=true;UI.animOnLoad=false}render();
 }
 
@@ -347,7 +363,6 @@ function renderTabs(){
 }
 function errBanner(e,where){
   if(!e)return"";
-  if(e.msg==="locked")return '<form class="banner info form" id="keyform"><label class="f wide" for="key-in">Dashboard password<input id="key-in" type="password" autocomplete="current-password" required></label><button type="submit" class="primary">Unlock</button></form>';
   return '<div class="banner bad" role="alert"><span>'+esc(e.msg)+'</span>'+(e.retry?'<button type="button" data-act="reload">Try again</button>':"")+'</div>';
 }
 function freshLine(){
@@ -517,7 +532,21 @@ const ICON_MOON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stro
 function paintThemeBtn(){const light=document.documentElement.getAttribute("data-theme")==="light";const b=$("#theme-btn");if(b)b.innerHTML=(light?ICON_MOON+"Dark":ICON_SUN+"Light")}
 function toggleTheme(){const r=document.documentElement;const light=r.getAttribute("data-theme")!=="light";if(light)r.setAttribute("data-theme","light");else r.removeAttribute("data-theme");try{localStorage.setItem("mo2-theme",light?"light":"dark")}catch(e){}paintThemeBtn()}
 
+function viewLogin(){
+  return '<section class="login"><div class="login-card">'+
+    '<span class="mark big" aria-hidden="true"></span>'+
+    '<div class="eyebrow">Editoz Club</div><h1>Marketing <em>Ops</em></h1>'+
+    '<p class="note">Sign in with your Editoz email and the team password.</p>'+
+    '<form id="loginform" class="login-form" novalidate>'+
+    '<label class="f" for="login-email">Work email<input id="login-email" name="email" type="email" autocomplete="username" placeholder="you@editozclub.com" required></label>'+
+    '<label class="f" for="login-pass">Password<input id="login-pass" name="password" type="password" autocomplete="current-password" required></label>'+
+    '<p class="login-err" id="login-err" role="alert"></p>'+
+    '<button type="submit" class="primary">Sign in</button></form></div></section>';
+}
 function render(){
+  document.body.classList.toggle("locked",!!S.locked);
+  const who=$("#who");if(who){who.textContent=S.user||"";who.parentElement.hidden=!S.user}
+  if(S.locked){const app=$("#app");if(!$("#loginform")){app.innerHTML='<div class="view enter">'+viewLogin()+'</div>';const em=$("#login-email");if(em)em.focus()}return}
   renderTabs();
   const app=$("#app");
   const views={today:viewToday,funnels:viewFunnels,upsell:viewUpsell,ads:viewAds,briefs:viewBriefs};
@@ -539,6 +568,7 @@ document.addEventListener("click",async e=>{
   const go=e.target.closest("[data-tab-go]");if(go){setTab(go.dataset.tabGo);return}
   if(e.target.closest('[data-act="reload"]')){UI.animOnLoad=true;loadAll(true);return}
   if(e.target.closest("#theme-btn")){toggleTheme();return}
+  if(e.target.closest("#signout")){try{await api("/api/login",{method:"POST",body:{logout:true}})}catch(x){}S.locked=true;S.user=null;S.clients=[];S.projects=[];S.tasks=[];S.board=[];S.ads=[];S.upsell={};render();return}
   const cell=e.target.closest("[data-cell]");if(cell){UI.selCell=UI.selCell===cell.dataset.cell?null:cell.dataset.cell;render();return}
   const clr=e.target.closest("[data-clear]");
   if(clr&&S.upsellOn){
@@ -557,7 +587,16 @@ document.addEventListener("input",e=>{if(e.target.id==="brief-q"){UI.briefQ=e.ta
 document.addEventListener("submit",async e=>{
   e.preventDefault();
   const f=e.target;
-  if(f.id==="keyform"){KEY=f.querySelector("#key-in").value.trim();try{localStorage.setItem("mo2-key",KEY)}catch(x){}loadAll(true);return}
+  if(f.id==="loginform"){
+    const err=$("#login-err"),btn=f.querySelector("button");err.textContent="";
+    const email=f.email.value.trim(),password=f.password.value;
+    if(!/@editozclub\.com$/i.test(email)){err.textContent="Use your @editozclub.com email.";return}
+    if(!password){err.textContent="Enter the team password.";return}
+    btn.disabled=true;btn.textContent="Signing in…";
+    try{await api("/api/login",{method:"POST",body:{email,password}});UI.animOnLoad=true;S.locked=false;await loadAll(true)}
+    catch(x){err.textContent=x.message||"Couldn't sign in.";btn.disabled=false;btn.textContent="Sign in";f.password.value="";f.password.focus()}
+    return;
+  }
   const btn=f.querySelector('button[type="submit"]');
   if(f.id==="adform"){
     if(!S.adsOn){toast("Ad logging is switched off");return}
