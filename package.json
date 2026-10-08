@@ -1,6 +1,5 @@
 {
   "name": "marketing-ops-dashboard",
   "private": true,
-  "description": "Accelerate Marketing Ops dashboard. Reads Notion through a Vercel serverless proxy.",
-  "engines": { "node": ">=18" }
+  "description": "Accelerate Marketing Ops dashboard. Reads Notion through a Vercel serverless proxy."
 }
