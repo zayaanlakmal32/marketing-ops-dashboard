@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Accelerate Marketing Ops</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Instrument+Serif:ital@1&display=swap">
+<style>
+/* Layout: ops console in Oshara's Accelerate look. Sticky tab bar; Today = summary first, other tabs = detail. Blue accent, italic serif accent word, thin bordered panels. */
+:root{
+  --bg:#F5F7FC; --surface:#FFFFFF; --ink:#0E1424; --muted:#5A6479; --line:#DCE4F3; --line-strong:#C3D0EA;
+  --blue:#2346DF; --blue-ink:#FFFFFF; --blue-soft:#EAF0FF;
+  --good:#167A3E; --good-soft:#E3F5EA; --warn:#A85A07; --warn-soft:#FFF1DC; --bad:#C0283A; --bad-soft:#FDE7EA;
+  --none:#B9C3D8;
+  --sans:"Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --serif:"Instrument Serif", Georgia, "Times New Roman", serif;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0A0F1E; --surface:#111831; --ink:#E7ECF8; --muted:#97A1BB; --line:#232D50; --line-strong:#33406B;
+  --blue:#8099FF; --blue-ink:#0A0F1E; --blue-soft:#1A2452;
+  --good:#5BD98A; --good-soft:#123323; --warn:#F5B94A; --warn-soft:#3A2A0E; --bad:#FF7C8E; --bad-soft:#3D1620;
+  --none:#3A4570; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0A0F1E; --surface:#111831; --ink:#E7ECF8; --muted:#97A1BB; --line:#232D50; --line-strong:#33406B;
+  --blue:#8099FF; --blue-ink:#0A0F1E; --blue-soft:#1A2452;
+  --good:#5BD98A; --good-soft:#123323; --warn:#F5B94A; --warn-soft:#3A2A0E; --bad:#FF7C8E; --bad-soft:#3D1620;
+  --none:#3A4570; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.5;font-variant-numeric:tabular-nums}
+a{color:var(--blue)}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:20px;padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.top-in{max-width:1240px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:12px 16px;flex-wrap:wrap}
+.brand{font-weight:800;letter-spacing:-.01em;font-size:15px;display:flex;align-items:baseline;gap:6px}
+.brand em{font-family:var(--serif);font-weight:400;font-size:19px;color:var(--blue)}
+.draft{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--warn);background:var(--warn-soft);padding:2px 7px;border-radius:999px}
+nav.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+nav.tabs button{color:var(--muted);background:none;border:0;font:inherit;font-weight:700;font-size:13px;padding:7px 12px;border-radius:999px;cursor:pointer}
+nav.tabs button:hover{color:var(--ink);background:var(--blue-soft)}
+nav.tabs button[aria-current="page"]{background:var(--ink);color:var(--bg)}
+nav.tabs .count{display:inline-block;min-width:18px;padding:0 5px;margin-left:5px;border-radius:9px;background:var(--bad);color:var(--surface);font-size:11px;text-align:center}
+.hero{padding-block:24px 16px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px 24px;justify-content:space-between}
+.eyebrow{font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--blue)}
+h1{font-size:clamp(24px,3.4vw,32px);line-height:1.12;letter-spacing:-.02em;font-weight:800;margin:6px 0 0;text-wrap:balance}
+h1 em,h2 em{font-family:var(--serif);font-weight:400;color:var(--blue);letter-spacing:0}
+h2{font-size:17px;font-weight:800;letter-spacing:-.01em;margin:0;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;text-wrap:balance}
+h2 em{font-size:21px}
+h2 .sub{font-size:12.5px;font-weight:600;color:var(--muted)}
+.stats{display:flex;gap:24px;flex-wrap:wrap}
+.stat b{display:block;font-size:28px;font-weight:800;line-height:1;color:var(--blue);letter-spacing:-.02em}
+.stat span{font-size:12px;color:var(--muted);font-weight:600}
+.stat.bad b{color:var(--bad)} .stat.warn b{color:var(--warn)}
+.grid{display:grid;gap:16px}
+.g-2{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}
+@media (max-width:900px){.g-2{grid-template-columns:minmax(0,1fr)}}
+.stack{display:flex;flex-direction:column;gap:16px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;min-width:0}
+.panel-h{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.row{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line)}
+.row:first-child{border-top:0;padding-top:2px}
+.row .main{flex:1;min-width:0}
+.row .t{font-weight:700;overflow-wrap:anywhere}
+.row .m{font-size:12.5px;color:var(--muted)}
+.sev{flex:none;width:9px;height:9px;border-radius:50%;margin-top:6px;background:var(--none)}
+.sev.bad{background:var(--bad)} .sev.warn{background:var(--warn)} .sev.good{background:var(--good)} .sev.blue{background:var(--blue)}
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--blue-soft);color:var(--blue);white-space:nowrap}
+.pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.good{background:var(--good-soft);color:var(--good)} .pill.muted{background:transparent;color:var(--muted);border:1px solid var(--line)}
+.pills{display:flex;gap:4px;flex-wrap:wrap}
+.empty{color:var(--muted);font-size:13px;padding:10px 0}
+.empty b{color:var(--ink)}
+.note{font-size:12.5px;color:var(--muted)}
+.banner{border-radius:8px;padding:10px 14px;font-weight:600;font-size:13px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.banner.warn{background:var(--warn-soft);color:var(--warn)}
+.banner.bad{background:var(--bad-soft);color:var(--bad)}
+.banner.info{background:var(--blue-soft);color:var(--blue)}
+button,.btn{font:inherit;font-weight:700;font-size:13px;border-radius:8px;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);padding:7px 12px;cursor:pointer}
+button:hover{border-color:var(--blue);color:var(--blue)}
+button.primary{background:var(--blue);border-color:var(--blue);color:var(--blue-ink)}
+button.primary:hover{filter:brightness(1.08);color:var(--blue-ink)}
+button.ghost{border-color:transparent;background:transparent;color:var(--muted);padding:4px 8px}
+button.ghost:hover{color:var(--blue)}
+button.danger{color:var(--bad)}
+button.danger.armed{background:var(--bad);border-color:var(--bad);color:var(--surface)}
+button:disabled{opacity:.5;cursor:not-allowed}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line-strong);border-radius:7px;padding:6px 9px;min-width:0;max-width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--blue);outline:none;box-shadow:0 0 0 3px var(--blue-soft)}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:var(--muted)}
+.form{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.form label.f{flex:1 1 130px}
+.form label.f.wide{flex:2 1 220px}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.r,th.r{text-align:right}
+.map td{padding:4px}
+.map td.name{font-weight:800;white-space:nowrap;padding-right:12px}
+.mapcell{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;min-width:104px;text-align:left;border:1px solid var(--line);border-radius:8px;padding:7px 9px;background:var(--surface);min-height:50px;font-weight:600}
+.mapcell .s{font-size:11.5px;font-weight:800}
+.mapcell .c{font-size:11.5px;color:var(--muted);font-weight:600}
+.mapcell.done{background:var(--good-soft);border-color:transparent}.mapcell.done .s{color:var(--good)}
+.mapcell.active{background:var(--blue-soft);border-color:transparent}.mapcell.active .s{color:var(--blue)}
+.mapcell.stuck{background:var(--bad-soft);border-color:transparent}.mapcell.stuck .s{color:var(--bad)}
+.mapcell.empty .s{color:var(--muted)}
+.mapcell.sel{box-shadow:0 0 0 2px var(--blue)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted);font-weight:600}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.adcard{border:1px solid var(--line);border-radius:var(--r);padding:14px;background:var(--surface);display:flex;flex-direction:column;gap:8px;min-width:0}
+.adcard .kpis{display:flex;gap:16px;flex-wrap:wrap}
+.adcard .kpis div b{display:block;font-size:19px;font-weight:800;letter-spacing:-.01em}
+.adcard .kpis div span{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.up{color:var(--bad);font-weight:800} .down{color:var(--good);font-weight:800}
+details.edit{margin-top:6px}
+details.edit summary{cursor:pointer;font-size:12.5px;font-weight:700;color:var(--blue);list-style:none}
+details.edit summary::-webkit-details-marker{display:none}
+details.edit .form{margin-top:8px;padding:10px;border:1px dashed var(--line-strong);border-radius:8px}
+.brief{font-size:13px;color:var(--ink);white-space:pre-wrap;overflow-wrap:anywhere;max-height:220px;overflow:auto;background:var(--bg);border-radius:8px;padding:10px;margin-top:6px}
+.links{display:flex;gap:10px;flex-wrap:wrap;font-size:12.5px;font-weight:700}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:999px;font-weight:700;font-size:13px;z-index:60}
+.fresh{font-size:12px;color:var(--muted);font-weight:600}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media (max-width:600px){.wrap,.top-in{padding-inline:16px} nav.tabs{margin-left:0} .stats{gap:18px} .stat b{font-size:24px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <div class="brand">Accelerate <em>Marketing Ops</em> <span class="draft">Draft v1</span></div>
+  <nav class="tabs" id="tabs" aria-label="Sections">
+    <button data-tab="today" type="button">Today</button>
+    <button data-tab="funnels" type="button">Funnels</button>
+    <button data-tab="upsell" type="button">Upsell</button>
+    <button data-tab="ads" type="button">Ads</button>
+    <button data-tab="briefs" type="button">Briefs</button>
+  </nav>
+</div></header>
+<main class="wrap" id="app">
+  <div class="hero"><div><div class="eyebrow">Loading</div><h1>Pulling live <em>funnel</em> data from Notion</h1><p class="note">Reading PM Engine v2, the Project Tracker and the Strategy Board.</p></div></div>
+</main>
+<div id="toast-root"></div>
+
+<script>
+(function(){
+/* ---------- constants ---------- */
+const NOTION = "Notion";
+const TOOL = "notion-query-data-sources";
+const DS = {
+  tracker: "collection://b6b396fe-f0cf-4d7e-9845-e18c630c0ae7",
+  projects: "collection://2b1b6494-fc14-82b9-8659-872f524ab1fd",
+  tasks: "collection://9acb6494-fc14-8290-af49-87a1c6c613ed",
+  board: "collection://309b6494-fc14-8073-ae13-000b7a00ba6e"
+};
+const STAGES = ["Ads","Landing page","Lead magnet","CRM + automations","Nurture"];
+const ADDONS = ["Meta Ads setup & Management","CRM Setup","Manychat Setup","Website Optimization","Website Build (From scratch)","Editing"];
+const ISSUE_TO_ADDON = {
+  "6.1":"Website Optimization","6.5":"CRM Setup","6.6":"Meta Ads setup & Management","6.7":"Manychat Setup","6.2":"Meta Ads setup & Management","6.4":"Meta Ads setup & Management"
+};
+const CUR = {USD:"$",AUD:"A$",LKR:"Rs ",GBP:"£",NZD:"NZ$",CAD:"C$"};
+const STUCK_STATUSES = ["Need Feedback","Need Revision"];
+
+/* ---------- state ---------- */
+const S = {
+  clients:[], projects:[], tasks:[], board:[],
+  err:{core:null,tasks:null}, loading:true, loadedAt:null,
+  ads:[], upsell:{}, adsOn:false, upsellOn:false, saving:false
+};
+const UI = {tab:"today", selCell:null, briefQ:"", adClient:"all"};
+try{const t=localStorage.getItem("mo2-tab"); if(t) UI.tab=t;}catch(e){}
+if(/^#(today|funnels|upsell|ads|briefs)$/.test(location.hash)) UI.tab=location.hash.slice(1);
+
+/* ---------- helpers ---------- */
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const id32=s=>{const m=String(s||"").replace(/-/g,"").match(/[0-9a-f]{32}/i);return m?m[0].toLowerCase():null};
+const arr=v=>{if(Array.isArray(v))return v;if(v==null||v==="")return[];try{const x=JSON.parse(v);return Array.isArray(x)?x:[]}catch(e){return[]}};
+const nlink=id=>"https://www.notion.so/"+id;
+function iso(d){const x=new Date(d);x.setMinutes(x.getMinutes()-x.getTimezoneOffset());return x.toISOString().slice(0,10)}
+const TODAY=iso(new Date());
+function addDays(s,n){const d=new Date(s+"T00:00:00");d.setDate(d.getDate()+n);return iso(d)}
+function diff(a,b){return Math.round((new Date(b+"T00:00:00")-new Date(a+"T00:00:00"))/864e5)}
+function fmtDate(s){if(!s)return"";return new Date(s.slice(0,10)+"T00:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"short"})}
+function money(v,c){if(v==null||isNaN(v))return"–";const sym=CUR[c]||"$";return sym+(v>=100?Math.round(v).toLocaleString():(+v).toFixed(2))}
+function firstKey(name){const w=String(name||"").toLowerCase().replace(/[^a-z\s]/g," ").split(/\s+/).filter(x=>x&&x.length>2&&x!=="the");return w[0]||null}
+function toast(msg){const r=$("#toast-root");r.innerHTML='<div class="toast" role="status">'+esc(msg)+'</div>';clearTimeout(toast._t);toast._t=setTimeout(()=>{r.innerHTML=""},2200)}
+
+/* ---------- data from /api (Notion token stays on the server) ---------- */
+let KEY=""; try{KEY=localStorage.getItem("mo2-key")||""}catch(e){}
+async function api(path,opts){
+  opts=opts||{};
+  const res=await fetch(path,{method:opts.method||"GET",headers:Object.assign({"Content-Type":"application/json"},KEY?{"x-access-key":KEY}:{}),body:opts.body?JSON.stringify(opts.body):undefined});
+  let j={};try{j=await res.json()}catch(e){}
+  if(!res.ok){const err=new Error(j.message||("Request failed ("+res.status+")"));err.code=j.error||res.status;throw err}
+  return j;
+}
+function errText(e){
+  if(e&&e.code==="locked")return{msg:"locked",retry:false};
+  return{msg:(e&&e.message)||"Couldn't load data from Notion.",retry:true};
+}
+async function loadAll(fresh){
+  S.loading=true;S.err.core=null;S.err.tasks=null;render();
+  try{
+    const d=await api("/api/data"+(fresh?"?fresh="+Date.now():""));
+    S.clients=d.clients||[];S.projects=d.projects||[];S.tasks=d.tasks||[];S.board=d.board||[];
+    S.adsOn=Array.isArray(d.ads);S.upsellOn=!!d.upsell;
+    const names={};S.clients.forEach(c=>{names[c.id]=c.name});
+    S.ads=(d.ads||[]).map(a=>Object.assign({},a,{clientName:names[a.clientId]||"Unknown client"}));
+    S.upsell=d.upsell||{};
+    S.loadedAt=Date.parse(d.loadedAt)||Date.now();
+  }catch(e){S.err.core=errText(e)}
+  S.loading=false;render();
+}
+
+/* ---------- derived ---------- */
+const clientById=id=>S.clients.find(c=>c.id===id);
+const isOpen=t=>t.status!=="Done";
+const isOverdue=t=>isOpen(t)&&t.due&&t.due.slice(0,10)<TODAY;
+const isStuck=t=>isOpen(t)&&(STUCK_STATUSES.includes(t.status)||isOverdue(t));
+function projectsFor(cid){return S.projects.filter(p=>p.clientIds.includes(cid))}
+function tasksFor(cid){const pids=new Set(projectsFor(cid).map(p=>p.id));return S.tasks.filter(t=>t.projectIds.some(x=>pids.has(x)))}
+function clientOfTask(t){const p=S.projects.find(p=>t.projectIds.includes(p.id));return p?clientById(p.clientIds[0]):null}
+function funnelClients(){return S.clients.filter(c=>projectsFor(c.id).length)}
+function stageState(cid,st){
+  const ts=tasksFor(cid).filter(t=>t.stage===st);
+  const open=ts.filter(isOpen),done=ts.length-open.length;
+  let state="empty";
+  if(open.some(isStuck))state="stuck";else if(open.length)state="active";else if(done)state="done";
+  return{state,open:open.length,done,tasks:ts};
+}
+const STATE_LABEL={done:"Done",active:"In progress",stuck:"Stuck",empty:"Not started"};
+function boardFor(c){
+  const k=firstKey(c.name);if(!k)return[];
+  return S.board.filter(b=>String(b.client||"").toLowerCase().includes(k)||String(b.title||"").toLowerCase().includes(k));
+}
+function upsellInfo(c){
+  const day=c.start?diff(c.start.slice(0,10),TODAY)+1:null;
+  const missing=ADDONS.filter(a=>!c.addons.includes(a));
+  const signals=[];
+  if(day!=null&&day>=60&&day<=90)signals.push({kind:"warn",text:"Day "+day+" of 90: renewal window"});
+  else if(day!=null&&day>90)signals.push({kind:"warn",text:"Past day 90 (day "+day+")"});
+  const code=c.issue?String(c.issue).slice(0,3):null;
+  if(code&&ISSUE_TO_ADDON[code]&&missing.includes(ISSUE_TO_ADDON[code]))signals.push({kind:"bad",text:"Blocker "+code+" → offer "+ISSUE_TO_ADDON[code]});
+  if(c.pstage==="Funnel Creation & Ad Setup"&&missing.includes("Meta Ads setup & Management"))signals.push({kind:"blue",text:"In funnel & ad setup, no ads add-on yet"});
+  const cp=S.upsell[c.id]||null;
+  let due=false;
+  if(cp&&cp.nextDate&&cp.status!=="won"&&cp.status!=="declined"){const d=diff(TODAY,cp.nextDate);due=d<=7;}
+  return{day,missing,signals,cp,due};
+}
+function adStats(cid){
+  const logs=S.ads.filter(a=>a.clientId===cid);
+  const range=(a,b)=>logs.filter(l=>l.date>=a&&l.date<=b);
+  const sum=(xs,k)=>xs.reduce((s,l)=>s+(+l[k]||0),0);
+  const w=range(addDays(TODAY,-7),addDays(TODAY,-1)),p=range(addDays(TODAY,-14),addDays(TODAY,-8));
+  const s7=sum(w,"spend"),r7=sum(w,"results"),sp=sum(p,"spend"),rp=sum(p,"results");
+  const latest=logs.slice().sort((a,b)=>a.date<b.date?1:-1)[0];
+  return{count:logs.length,s7,r7,cpr7:r7>0?s7/r7:null,cprP:rp>0?sp/rp:null,cur:latest?latest.currency:"USD",label:latest?latest.resultLabel:"Leads",last:latest?latest.date:null};
+}
+
+/* ---------- render ---------- */
+function setTab(t){UI.tab=t;try{localStorage.setItem("mo2-tab",t)}catch(e){}render();window.scrollTo(0,0)}
+function renderTabs(){
+  const overdue=S.tasks.filter(isStuck).length;
+  document.querySelectorAll("#tabs button").forEach(b=>{
+    const t=b.dataset.tab;b.setAttribute("aria-current",t===UI.tab?"page":"false");
+    const label={today:"Today",funnels:"Funnels",upsell:"Upsell",ads:"Ads",briefs:"Briefs"}[t];
+    b.innerHTML=esc(label)+(t==="today"&&overdue?'<span class="count">'+overdue+'</span>':"");
+  });
+}
+function errBanner(e,where){
+  if(!e)return"";
+  if(e.msg==="locked")return '<form class="banner info form" id="keyform"><label class="f wide" for="key-in">Dashboard password<input id="key-in" type="password" autocomplete="current-password" required></label><button type="submit" class="primary">Unlock</button></form>';
+  return '<div class="banner bad" role="alert"><span>'+esc(e.msg)+'</span>'+(e.retry?'<button type="button" data-act="reload">Try again</button>':"")+'</div>';
+}
+function freshLine(){
+  if(S.loading)return'<span class="fresh">Refreshing…</span>';
+  return S.loadedAt?'<span class="fresh">Notion data as of '+new Date(S.loadedAt).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})+'</span>':"";
+}
+function taskRow(t,showClient){
+  const c=showClient?clientOfTask(t):null;
+  const sev=isOverdue(t)?"bad":STUCK_STATUSES.includes(t.status)?"warn":t.status==="Done"?"good":"blue";
+  const bits=[];
+  if(c)bits.push('<b>'+esc(c.name)+'</b>');
+  bits.push(esc(t.status));
+  if(t.due)bits.push((isOverdue(t)?'<span class="up">Due '+fmtDate(t.due)+' · '+diff(t.due.slice(0,10),TODAY)+'d late</span>':'Due '+fmtDate(t.due)));
+  return '<div class="row"><span class="sev '+sev+'"></span><div class="main"><div class="t"><a href="'+nlink(t.id)+'" target="_blank" rel="noopener">'+esc(t.name||"Untitled task")+'</a></div><div class="m">'+bits.join(" · ")+'</div></div>'+(t.stage?'<span class="pill muted">'+esc(t.stage)+'</span>':'<span class="pill warn">No stage</span>')+'</div>';
+}
+
+function viewToday(){
+  const active=S.clients.length;
+  const running=S.projects.filter(p=>!["Done","Canceled","Archived"].includes(p.status)).length;
+  const stuck=S.tasks.filter(isStuck);
+  const overdue=S.tasks.filter(isOverdue);
+  const feedback=S.tasks.filter(t=>t.status==="Need Feedback");
+  const ups=S.clients.map(c=>({c,u:upsellInfo(c)}));
+  const upDue=ups.filter(x=>x.u.due);
+  const upSignals=ups.filter(x=>x.u.signals.length).length;
+  const untagged=S.tasks.filter(t=>!t.stage&&isOpen(t));
+  const untaggedProjects=S.projects.length;
+  let h='<div class="hero"><div><div class="eyebrow">'+new Date().toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"})+'</div><h1>What needs <em>you</em> today</h1></div>'+
+    '<div class="stats"><div class="stat"><b>'+active+'</b><span>Active clients</span></div><div class="stat"><b>'+running+'</b><span>Funnels running</span></div><div class="stat '+(overdue.length?"bad":"")+'"><b>'+overdue.length+'</b><span>Overdue tasks</span></div><div class="stat '+(feedback.length?"warn":"")+'"><b>'+feedback.length+'</b><span>Need feedback</span></div><div class="stat"><b>'+upDue.length+'</b><span>Upsell checks this week</span></div></div></div>';
+  h+='<div class="toolbar" style="margin-bottom:16px">'+freshLine()+'<button type="button" class="ghost" data-act="reload">Refresh</button></div>';
+  h+=errBanner(S.err.core)+errBanner(S.err.tasks);
+  if(untaggedProjects<=1&&!S.loading&&!S.err.core)h+='<div class="banner info" style="margin-bottom:16px"><span>Draft: only Heddi\'s Funnel is linked to a client so far. Set <b>Client</b> on more PM Engine projects and they appear here automatically.</span></div>';
+  h+='<div class="grid g-2"><div class="stack">';
+  h+='<section class="panel"><div class="panel-h"><h2>Stuck or <em>overdue</em> <span class="sub">'+stuck.length+' tasks</span></h2></div>'+(stuck.length?stuck.sort((a,b)=>(a.due||"9")<(b.due||"9")?-1:1).map(t=>taskRow(t,true)).join(""):'<div class="empty">Nothing stuck. Overdue tasks and tasks marked <b>Need Feedback</b> or <b>Need Revision</b> show here.</div>')+'</section>';
+  h+='<section class="panel"><div class="panel-h"><h2>Tasks with no <em>stage</em> <span class="sub">'+untagged.length+'</span></h2></div>'+(untagged.length?'<p class="note" style="margin:0 0 6px">Set <b>Funnel Stage</b> on these in Notion so they land in the Funnels grid.</p>'+untagged.map(t=>taskRow(t,true)).join(""):'<div class="empty">Every open funnel task has a stage.</div>')+'</section>';
+  h+='</div><div class="stack">';
+  h+='<section class="panel"><div class="panel-h"><h2>Upsell <em>this week</em></h2><button type="button" class="ghost" data-tab-go="upsell">Open Upsell</button></div>'+
+    (upDue.length?upDue.map(({c,u})=>'<div class="row"><span class="sev warn"></span><div class="main"><div class="t">'+esc(c.name)+'</div><div class="m">'+esc(u.cp.offer||"Offer not set")+' · '+fmtDate(u.cp.nextDate)+'</div></div></div>').join(""):'<div class="empty">No checkpoints set for this week. '+upSignals+' clients show an upsell signal on the Upsell tab.</div>')+'</section>';
+  const adsMissing=funnelClients().filter(c=>{const a=adStats(c.id);return !a.last||diff(a.last,TODAY)>7});
+  h+='<section class="panel"><div class="panel-h"><h2>Ad <em>numbers</em></h2><button type="button" class="ghost" data-tab-go="ads">Log ads</button></div>'+
+    (S.ads.length?'<div class="note">'+S.ads.filter(a=>a.date>=addDays(TODAY,-7)).length+' entries logged in the last 7 days.'+(adsMissing.length?' No entry in 7+ days for: '+adsMissing.map(c=>esc(c.name)).join(", ")+'.':'')+'</div>':'<div class="empty">No ad numbers logged yet. Add spend and results on the <b>Ads</b> tab.</div>')+'</section>';
+  h+='</div></div>';
+  return h;
+}
+
+function viewFunnels(){
+  const fc=funnelClients();
+  let h='<div class="hero"><div><div class="eyebrow">PM Engine v2</div><h1>Funnel <em>progress</em> by client</h1></div><div class="legend"><span><i style="background:var(--good)"></i>Done</span><span><i style="background:var(--blue)"></i>In progress</span><span><i style="background:var(--bad)"></i>Stuck or overdue</span><span><i style="border:1.5px solid var(--none)"></i>Not started</span></div></div>';
+  h+=errBanner(S.err.core)+errBanner(S.err.tasks);
+  if(!fc.length){h+='<section class="panel"><div class="empty">'+(S.loading?"Loading…":'No PM Engine projects are linked to a client yet. Open a project in <b>PM Engine v2 → Projects</b> and pick the client in the <b>Client</b> column.')+'</div></section>';return h}
+  h+='<section class="panel"><div class="tbl-wrap"><table class="map"><thead><tr><th>Client</th>'+STAGES.map(s=>'<th>'+esc(s)+'</th>').join("")+'<th class="r">Open</th></tr></thead><tbody>';
+  fc.forEach(c=>{
+    const all=tasksFor(c.id);
+    h+='<tr><td class="name">'+esc(c.name)+'<div class="note">'+projectsFor(c.id).map(p=>'<a href="'+nlink(p.id)+'" target="_blank" rel="noopener">'+esc(p.name)+'</a>').join(", ")+'</div></td>';
+    STAGES.forEach(st=>{
+      const s=stageState(c.id,st);const key=c.id+"|"+st;
+      h+='<td><button type="button" class="mapcell '+s.state+(UI.selCell===key?" sel":"")+'" data-cell="'+esc(key)+'"><span class="s">'+STATE_LABEL[s.state]+'</span><span class="c">'+(s.tasks.length?s.done+'/'+s.tasks.length+' done':'No tasks')+'</span></button></td>';
+    });
+    h+='<td class="r">'+all.filter(isOpen).length+'</td></tr>';
+  });
+  h+='</tbody></table></div></section>';
+  if(UI.selCell){
+    const [cid,st]=UI.selCell.split("|");const c=clientById(cid);const s=c?stageState(cid,st):null;
+    if(s)h+='<section class="panel" style="margin-top:16px"><div class="panel-h"><h2>'+esc(c.name)+' · <em>'+esc(st)+'</em></h2><button type="button" class="ghost" data-cell="'+esc(UI.selCell)+'">Close</button></div>'+(s.tasks.length?s.tasks.map(t=>taskRow(t,false)).join(""):'<div class="empty">No tasks tagged <b>'+esc(st)+'</b> for this client.</div>')+'</section>';
+  }
+  const untagged=S.tasks.filter(t=>!t.stage);
+  if(untagged.length)h+='<p class="note" style="margin-top:12px">'+untagged.length+' task(s) on linked projects have no Funnel Stage and are left out of the grid.</p>';
+  return h;
+}
+
+function addonOptions(sel){return '<option value="">Choose…</option>'+ADDONS.map(a=>'<option'+(a===sel?" selected":"")+'>'+esc(a)+'</option>').join("")+'<option'+(sel==="Other"?" selected":"")+'>Other</option>'}
+function viewUpsell(){
+  const rows=S.clients.map(c=>({c,u:upsellInfo(c)}));
+  rows.sort((a,b)=>(b.u.due-a.u.due)||(b.u.signals.length-a.u.signals.length)||String(a.c.name).localeCompare(String(b.c.name)));
+  let h='<div class="hero"><div><div class="eyebrow">Project Tracker + your checkpoints</div><h1>When to <em>upsell</em></h1></div></div>';
+  h+=errBanner(S.err.core);
+  h+='<div class="banner warn" style="margin-bottom:16px"><span>Draft rules until the strat check-in checkpoints are confirmed: day 60 to 90 of the 90-day phase, funnel blockers (6.x) and add-ons not yet bought. Set a checkpoint per client below.</span></div>';
+  if(!S.upsellOn&&!S.loading)h+='<div class="banner info" style="margin-bottom:16px"><span>Saving checkpoints is switched off until the Upsell Checkpoints database is set up in Notion. Signals below still work.</span></div>';
+  h+='<section class="panel"><div class="tbl-wrap"><table><thead><tr><th>Client</th><th>90-day phase</th><th>Signals</th><th>Not bought yet</th><th>Checkpoint</th></tr></thead><tbody>';
+  rows.forEach(({c,u})=>{
+    const cp=u.cp||{};
+    const stLabel={planned:"Planned",pitched:"Pitched",won:"Won",declined:"Declined"}[cp.status]||"";
+    h+='<tr><td><b>'+esc(c.name)+'</b><div class="note">'+esc([c.stage,c.type].filter(Boolean).join(" · "))+'</div></td>'+
+      '<td>'+(u.day!=null?'Day '+u.day:'<span class="note">No start date</span>')+'</td>'+
+      '<td><div class="pills">'+(u.signals.length?u.signals.map(s=>'<span class="pill '+(s.kind==="blue"?"":s.kind)+'">'+esc(s.text)+'</span>').join(""):'<span class="note">None</span>')+'</div></td>'+
+      '<td style="min-width:180px"><div class="pills">'+u.missing.map(a=>'<span class="pill muted">'+esc(a)+'</span>').join("")+'</div>'+(c.addons.length?'<div class="note" style="margin-top:4px">Has: '+esc(c.addons.join(", "))+'</div>':'')+'</td>'+
+      '<td style="min-width:220px">'+(cp.nextDate?'<div><span class="pill '+(u.due?"warn":"")+'">'+fmtDate(cp.nextDate)+'</span> '+esc(cp.offer||"")+' '+(stLabel?'<span class="pill muted">'+stLabel+'</span>':'')+'</div>'+(cp.note?'<div class="note">'+esc(cp.note)+'</div>':''):'<span class="note">Not set</span>')+
+      '<details class="edit"><summary>'+(cp.nextDate?"Edit checkpoint":"Set checkpoint")+'</summary><form class="form" data-upsell="'+c.id+'">'+
+      '<label class="f" for="ud-'+c.id+'">Date<input type="date" id="ud-'+c.id+'" name="nextDate" value="'+esc(cp.nextDate||"")+'" required></label>'+
+      '<label class="f" for="uo-'+c.id+'">Offer<select id="uo-'+c.id+'" name="offer">'+addonOptions(cp.offer)+'</select></label>'+
+      '<label class="f" for="us-'+c.id+'">Status<select id="us-'+c.id+'" name="status">'+["planned","pitched","won","declined"].map(s=>'<option value="'+s+'"'+(cp.status===s?" selected":"")+'>'+s[0].toUpperCase()+s.slice(1)+'</option>').join("")+'</select></label>'+
+      '<label class="f wide" for="un-'+c.id+'">Note<input id="un-'+c.id+'" name="note" value="'+esc(cp.note||"")+'" placeholder="From the strat check-in"></label>'+
+      '<button type="submit" class="primary"'+(S.upsellOn?"":" disabled")+'>Save</button></form></details></td></tr>';
+  });
+  h+='</tbody></table></div></section>';
+  return h;
+}
+
+function viewAds(){
+  const opts=S.clients.map(c=>'<option value="'+c.id+'">'+esc(c.name)+'</option>').join("");
+  let h='<div class="hero"><div><div class="eyebrow">Manual entry</div><h1>Ad <em>spend</em> and results</h1></div></div>';
+  if(!S.adsOn&&!S.loading)h+='<div class="banner info" style="margin-bottom:16px"><span>Ad logging is switched off until the Ad Log database is set up in Notion.</span></div>';
+  h+='<section class="panel"><div class="panel-h"><h2>Log <em>numbers</em> <span class="sub">one row per client per day</span></h2></div>'+
+    '<form class="form" id="adform">'+
+    '<label class="f wide" for="ad-client">Client<select id="ad-client" name="clientId" required><option value="">Choose a client…</option>'+opts+'</select></label>'+
+    '<label class="f" for="ad-date">Date<input type="date" id="ad-date" name="date" value="'+addDays(TODAY,-1)+'" required></label>'+
+    '<label class="f" for="ad-cur">Currency<select id="ad-cur" name="currency">'+Object.keys(CUR).map(k=>'<option>'+k+'</option>').join("")+'</select></label>'+
+    '<label class="f" for="ad-spend">Spend<input type="number" step="0.01" min="0" id="ad-spend" name="spend" required></label>'+
+    '<label class="f" for="ad-res">Results<input type="number" step="1" min="0" id="ad-res" name="results" required></label>'+
+    '<label class="f" for="ad-label">Result type<select id="ad-label" name="resultLabel"><option>Leads</option><option>Bookings</option><option>Purchases</option><option>Messages</option></select></label>'+
+    '<label class="f wide" for="ad-note">Note<input id="ad-note" name="note" placeholder="Optional, e.g. new creative live"></label>'+
+    '<button type="submit" class="primary"'+(S.adsOn?"":" disabled")+'>Add entry</button></form>'+
+    '<p class="note" style="margin:8px 0 0">Waiting on Oshara to confirm which fields to track. These are a starting set.</p></section>';
+  const withAds=S.clients.filter(c=>adStats(c.id).count);
+  h+='<h2 style="margin:22px 0 12px">Last 7 days <span class="sub">cost per result vs the 7 days before</span></h2>';
+  if(!withAds.length)h+='<section class="panel"><div class="empty">'+(S.loading?"Loading saved entries…":"No entries yet. Log the first one above and a card appears per client.")+'</div></section>';
+  else{
+    h+='<div class="cards">'+withAds.map(c=>{const a=adStats(c.id);let trend="";
+      if(a.cpr7!=null&&a.cprP!=null){const ch=(a.cpr7-a.cprP)/a.cprP*100;trend='<span class="'+(ch>0?"up":"down")+'">'+(ch>0?"▲":"▼")+' '+Math.abs(ch).toFixed(0)+'%</span> vs prior week';}
+      else trend='<span class="note">Needs two weeks of entries to compare</span>';
+      return '<div class="adcard"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><b>'+esc(c.name)+'</b><span class="note">Last entry '+fmtDate(a.last)+'</span></div><div class="kpis"><div><b>'+money(a.s7,a.cur)+'</b><span>Spend</span></div><div><b>'+a.r7+'</b><span>'+esc(a.label||"Results")+'</span></div><div><b>'+money(a.cpr7,a.cur)+'</b><span>Per result</span></div></div><div class="note">'+trend+'</div></div>'}).join("")+'</div>';
+  }
+  const recent=S.ads.slice().sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:0).slice(0,40);
+  if(recent.length){
+    h+='<section class="panel" style="margin-top:16px"><div class="panel-h"><h2>Recent <em>entries</em></h2></div><div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Client</th><th class="r">Spend</th><th class="r">Results</th><th class="r">Per result</th><th>Note</th><th></th></tr></thead><tbody>'+
+      recent.map(a=>'<tr><td>'+fmtDate(a.date)+'</td><td>'+esc(a.clientName)+'</td><td class="r">'+money(a.spend,a.currency)+'</td><td class="r">'+esc(a.results)+' '+esc(a.resultLabel||"")+'</td><td class="r">'+(a.results>0?money(a.spend/a.results,a.currency):"–")+'</td><td>'+esc(a.note||"")+'</td><td class="r"><button type="button" class="ghost danger" data-del="'+esc(a.id)+'"'+(S.adsOn?"":" disabled")+'>Delete</button></td></tr>').join("")+'</tbody></table></div></section>';
+  }
+  return h;
+}
+
+function viewBriefs(){
+  const q=UI.briefQ.trim().toLowerCase();
+  const list=S.clients.filter(c=>!q||String(c.name).toLowerCase().includes(q));
+  let h='<div class="hero"><div><div class="eyebrow">Strategy Board + Project Tracker</div><h1>Client <em>briefs</em> and decks</h1></div>'+
+    '<label class="f" for="brief-q" style="min-width:220px">Find a client<input id="brief-q" type="search" value="'+esc(UI.briefQ)+'" placeholder="Type a name"></label></div>';
+  h+=errBanner(S.err.core);
+  if(!list.length){h+='<section class="panel"><div class="empty">'+(S.loading?"Loading…":"No client matches that name.")+'</div></section>';return h}
+  h+='<div class="cards">'+list.map(c=>{
+    const items=boardFor(c);
+    const goal=items.map(b=>b.goal).find(Boolean),brief=items.map(b=>b.brief).find(Boolean);
+    const links=[];
+    if(c.deck)links.push('<a href="'+esc(c.deck)+'" target="_blank" rel="noopener">Strategy deck</a>');
+    items.forEach(b=>{if(b.deck&&b.deck!==c.deck)links.push('<a href="'+esc(b.deck)+'" target="_blank" rel="noopener">'+esc(b.type||"Deck")+'</a>');if(b.final)links.push('<a href="'+esc(b.final)+'" target="_blank" rel="noopener">'+esc((b.type||"Final")+" final")+'</a>')});
+    return '<div class="adcard"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><b>'+esc(c.name)+'</b><span class="pill muted">'+esc(c.stage||"No stage")+'</span></div>'+
+      '<div class="note">'+esc([c.pstage,c.po&&("PO "+c.po),c.strat&&("Strat "+c.strat)].filter(Boolean).join(" · "))+'</div>'+
+      (goal?'<div><span class="note">Goal</span><div><b>'+esc(goal)+'</b></div></div>':'')+
+      (items.length?'<div class="pills">'+items.slice(0,6).map(b=>'<a class="pill '+(b.status==="Approved"?"good":b.status==="Backlog"?"muted":"")+'" href="'+nlink(b.id)+'" target="_blank" rel="noopener">'+esc(b.type||b.title)+': '+esc(b.status||"")+'</a>').join("")+'</div>':'<div class="note">No Strategy Board items found for this name.</div>')+
+      (brief?'<details class="edit"><summary>Read the brief</summary><div class="brief">'+esc(brief)+'</div></details>':'')+
+      (links.length?'<div class="links">'+[...new Set(links)].join("")+'</div>':'')+'</div>';
+  }).join("")+'</div>';
+  h+='<p class="note" style="margin-top:12px">Strategy Board items are matched to clients by name, so a misspelt client name on the board can hide an item.</p>';
+  return h;
+}
+
+function render(){
+  renderTabs();
+  const app=$("#app");
+  const views={today:viewToday,funnels:viewFunnels,upsell:viewUpsell,ads:viewAds,briefs:viewBriefs};
+  const active=document.activeElement&&document.activeElement.id;
+  const openDetails=[...document.querySelectorAll("details.edit[open] form")].map(f=>f.dataset.upsell);
+  const kept={};app.querySelectorAll("form input[id],form select[id]").forEach(el=>{kept[el.id]=el.value});
+  app.innerHTML=(views[UI.tab]||viewToday)();
+  Object.keys(kept).forEach(id=>{const el=document.getElementById(id);if(el)el.value=kept[id]});
+  openDetails.forEach(id=>{const f=document.querySelector('form[data-upsell="'+id+'"]');if(f)f.closest("details").open=true});
+  if(active){const el=document.getElementById(active);if(el&&el.id==="brief-q"){el.focus();el.setSelectionRange(el.value.length,el.value.length)}}
+}
+
+/* ---------- events ---------- */
+document.addEventListener("click",async e=>{
+  const tb=e.target.closest("#tabs button");if(tb){setTab(tb.dataset.tab);return}
+  const go=e.target.closest("[data-tab-go]");if(go){setTab(go.dataset.tabGo);return}
+  if(e.target.closest('[data-act="reload"]')){loadAll(true);return}
+  const cell=e.target.closest("[data-cell]");if(cell){UI.selCell=UI.selCell===cell.dataset.cell?null:cell.dataset.cell;render();return}
+  const del=e.target.closest("[data-del]");
+  if(del&&S.adsOn){
+    if(!del.classList.contains("armed")){del.classList.add("armed");del.textContent="Confirm";setTimeout(()=>{if(del.isConnected){del.classList.remove("armed");del.textContent="Delete"}},3000);return}
+    try{await api("/api/ads?id="+encodeURIComponent(del.dataset.del),{method:"DELETE"});toast("Entry deleted");loadAll(true)}catch(x){toast("Couldn't delete: "+x.message)}
+  }
+});
+document.addEventListener("input",e=>{if(e.target.id==="brief-q"){UI.briefQ=e.target.value;render()}});
+document.addEventListener("submit",async e=>{
+  e.preventDefault();
+  const f=e.target;
+  if(f.id==="keyform"){KEY=f.querySelector("#key-in").value.trim();try{localStorage.setItem("mo2-key",KEY)}catch(x){}loadAll(true);return}
+  const btn=f.querySelector('button[type="submit"]');
+  if(f.id==="adform"){
+    if(!S.adsOn){toast("Ad logging is switched off");return}
+    const d=Object.fromEntries(new FormData(f));const c=clientById(d.clientId);
+    if(!c){toast("Choose a client");return}
+    btn.disabled=true;
+    try{
+      await api("/api/ads",{method:"POST",body:{clientId:c.id,clientName:c.name,date:d.date,currency:d.currency,spend:+d.spend,results:+d.results,resultLabel:d.resultLabel,note:String(d.note||"").slice(0,300)}});
+      toast("Entry added for "+c.name);
+      f.querySelector("#ad-spend").value="";f.querySelector("#ad-res").value="";f.querySelector("#ad-note").value="";
+      loadAll(true);
+    }catch(x){toast("Couldn't save: "+x.message)}
+    btn.disabled=false;return;
+  }
+  if(f.dataset.upsell){
+    if(!S.upsellOn){toast("Checkpoints are switched off");return}
+    const d=Object.fromEntries(new FormData(f));const c=clientById(f.dataset.upsell);
+    btn.disabled=true;
+    try{
+      await api("/api/upsell",{method:"POST",body:{clientId:f.dataset.upsell,clientName:c?c.name:"",nextDate:d.nextDate,offer:d.offer||"",status:d.status||"planned",note:String(d.note||"").slice(0,400)}});
+      toast("Checkpoint saved");f.closest("details").open=false;loadAll(true);
+    }catch(x){toast("Couldn't save: "+x.message)}
+    btn.disabled=false;
+  }
+});
+
+/* ---------- boot ---------- */
+render();
+loadAll(false);
+})();
+</script>
+
+</body>
+</html>
