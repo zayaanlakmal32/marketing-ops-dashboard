@@ -8,6 +8,8 @@ Dashboard for Oshara. Reads Notion live through a small Vercel proxy, so the Not
 - `api/data.js`: reads Project Tracker, PM Engine Projects + Tasks and the Strategy Board
 - `api/ads.js`: saves and deletes ad entries (needs `AD_LOG_DS_ID`)
 - `api/upsell.js`: saves upsell checkpoints (needs `UPSELL_DS_ID`)
+- `api/adclients.js`: saves per-client ad settings (needs `AD_CLIENTS_DS_ID`)
+- `api/pitch.js`: saves the Pitch Update text on a PM Engine project
 - `api/login.js`: sign in / sign out (Editoz email + team password)
 - `lib/notion.js`: shared Notion helpers and login checks
 
@@ -26,6 +28,7 @@ Dashboard for Oshara. Reads Notion live through a small Vercel proxy, so the Not
 | `SESSION_SECRET` | No | Extra secret for signing logins. Optional; one is derived automatically. |
 | `AD_LOG_DS_ID` | No | Turns on the Ads tab saving. Data source ID of the Ad Log database. |
 | `UPSELL_DS_ID` | No | Turns on upsell checkpoint saving. Data source ID of the Upsell Checkpoints database. |
+| `AD_CLIENTS_DS_ID` | No | Turns on ad settings (who runs ads, result type, currency, target). Data source ID of the Ad Clients database. |
 
 ## How clients show up
 
