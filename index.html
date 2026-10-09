@@ -464,7 +464,9 @@ function viewToday(){
   const overdue=S.tasks.filter(isOverdue);
   const ups=S.clients.map(c=>({c,u:upsellInfo(c)}));
   const upDue=ups.filter(x=>x.u.due).sort((a,b)=>a.u.cp.nextDate<b.u.cp.nextDate?-1:1);
-  const upSignals=ups.filter(x=>x.u.signals.length&&!x.u.due).sort((a,b)=>b.u.signals.length-a.u.signals.length);
+  const closed=ups.filter(x=>x.u.cp&&["won","declined"].includes(x.u.cp.status)&&x.u.cp.nextDate&&Math.abs(diff(TODAY,x.u.cp.nextDate))<=7).sort((a,b)=>a.u.cp.nextDate<b.u.cp.nextDate?1:-1);
+  const closedIds=new Set(closed.map(x=>x.c.id));
+  const upSignals=ups.filter(x=>x.u.signals.length&&!x.u.due&&!closedIds.has(x.c.id)).sort((a,b)=>b.u.signals.length-a.u.signals.length);
   const untagged=S.tasks.filter(t=>!t.stage&&isOpen(t));
   let h='<div class="hero"><div><div class="eyebrow">'+new Date().toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"})+'</div><h1>What needs <em>you</em> today</h1></div>'+
     '<div class="stats">'+
@@ -486,6 +488,7 @@ function viewToday(){
   // 2. Upsells
   h+='<section class="panel"><div class="panel-h"><h2>Upsell <em>this week</em></h2><button type="button" class="ghost" data-tab-go="upsell">Open Upsell</button></div>'+
     (upDue.length?upDue.map(({c,u})=>'<div class="row"><span class="sev warn"></span><div class="main"><div class="t">'+esc(c.name)+'</div><div class="m">'+esc(u.cp.offer||"Offer not set")+' · '+fmtDate(u.cp.nextDate)+(u.cp.note?' · '+esc(u.cp.note):'')+'</div></div><span class="pill muted">'+esc(u.cp.status||"planned")+'</span></div>').join(""):'<div class="empty">No checkpoints due in the next 7 days.</div>')+
+    (closed.length?'<div class="sub-h">Closed this week</div>'+closed.map(({c,u})=>{const won=u.cp.status==="won";return '<div class="row"><span class="sev '+(won?"good":"bad")+'"></span><div class="main"><div class="t">'+esc(c.name)+'</div><div class="m">'+esc(u.cp.offer||"Offer not set")+' · '+fmtDate(u.cp.nextDate)+(u.cp.note?' · '+esc(u.cp.note):'')+'</div></div><span class="pill '+(won?"good":"bad")+'">'+(won?"Won":"Declined")+'</span></div>'}).join(""):'')+
     (upSignals.length?'<div class="sub-h">Also worth a look</div>'+upSignals.slice(0,6).map(({c,u})=>'<div class="row"><span class="sev blue"></span><div class="main"><div class="t">'+esc(c.name)+'</div><div class="m">'+esc(u.signals.map(s=>s.text).join(" · "))+'</div></div></div>').join(""):'')+'</section>';
   h+='</div><div class="stack">';
   // 3. Overdue
