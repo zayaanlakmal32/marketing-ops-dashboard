@@ -37,7 +37,8 @@ module.exports = async (req, res) => {
       name: prop(p, "Project name"),
       status: prop(p, "Status"),
       due: prop(p, "Due"),
-      clientIds: prop(p, "Client") || []
+      clientIds: prop(p, "Client") || [],
+      pitch: prop(p, "Pitch Update") || ""
     }));
 
     // Tasks that belong to any linked project. Notion allows up to 100 conditions in one OR, so chunk by 50.
@@ -102,7 +103,18 @@ module.exports = async (req, res) => {
       });
     }
 
-    send(res, 200, { clients, projects, tasks, board, ads, upsell, user: user.email, loadedAt: new Date().toISOString() });
+    // Optional: per-client ad settings (who runs ads, result type, currency, target).
+    let adClients = null;
+    if (process.env.AD_CLIENTS_DS_ID) {
+      const pages = await queryAll(process.env.AD_CLIENTS_DS_ID, {}, 3);
+      adClients = {};
+      pages.forEach(p => {
+        const cid = (prop(p, "Client") || [])[0];
+        if (cid) adClients[cid] = { pageId: pid(p), running: !!prop(p, "Running Ads"), resultLabel: prop(p, "Result Type") || "Leads", currency: prop(p, "Currency") || "AUD", target: prop(p, "Target") };
+      });
+    }
+
+    send(res, 200, { clients, projects, tasks, board, ads, upsell, adClients, user: user.email, loadedAt: new Date().toISOString() });
   } catch (e) {
     fail(res, e);
   }
