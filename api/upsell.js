@@ -1,8 +1,10 @@
 // POST /api/upsell → create or update one client's upsell checkpoint in Notion
+//   { clientId, clientName, route, offer, nextDate, status, proposal, note }
 // DELETE /api/upsell?clientId=<id> → move that client's checkpoint to Notion's trash
 const { notion, queryAll, send, checkKey, fail } = require("../lib/notion");
 
 const STATUSES = { planned: "Planned", pitched: "Pitched", won: "Won", declined: "Declined" };
+const ROUTES = ["Win", "Client ask", "Gap"];
 const dashed = id => id.replace(/^(.{8})(.{4})(.{4})(.{4})(.{12})$/, "$1-$2-$3-$4-$5");
 
 module.exports = async (req, res) => {
@@ -24,14 +26,19 @@ module.exports = async (req, res) => {
   try {
     const b = req.body || {};
     if (!/^[0-9a-f]{32}$/i.test(b.clientId || "")) return send(res, 400, { error: "bad_input", message: "Missing client." });
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(b.nextDate || "")) return send(res, 400, { error: "bad_input", message: "Pick a checkpoint date." });
+    if (b.nextDate && !/^\d{4}-\d{2}-\d{2}$/.test(b.nextDate)) return send(res, 400, { error: "bad_input", message: "That call date doesn't look right." });
+    let proposal = String(b.proposal || "").trim();
+    if (proposal && !/^https?:\/\//i.test(proposal)) return send(res, 400, { error: "bad_input", message: "The proposal link should start with https://" });
+    const text = (v, n) => (v ? [{ text: { content: String(v).slice(0, n) } }] : []);
     const properties = {
-      Name: { title: [{ text: { content: String(b.clientName || "Client").slice(0, 80) } }] },
+      Name: { title: text(b.clientName || "Client", 80) },
       Client: { relation: [{ id: b.clientId }] },
-      "Next Date": { date: { start: b.nextDate } },
-      Offer: { select: b.offer ? { name: String(b.offer).slice(0, 90) } : null },
+      "Next Date": { date: b.nextDate ? { start: b.nextDate } : null },
+      Route: { select: ROUTES.includes(b.route) ? { name: b.route } : null },
+      "Suggested Offer": { rich_text: text(b.offer, 200) },
+      "Proposal Link": { url: proposal ? proposal.slice(0, 1000) : null },
       Status: { select: { name: STATUSES[b.status] || "Planned" } },
-      Note: { rich_text: b.note ? [{ text: { content: String(b.note).slice(0, 400) } }] : [] }
+      Note: { rich_text: text(b.note, 400) }
     };
     const existing = await queryAll(ds, { filter: { property: "Client", relation: { contains: dashed(b.clientId) } } }, 1);
     if (existing.length) await notion("/pages/" + existing[0].id, "PATCH", { properties });
