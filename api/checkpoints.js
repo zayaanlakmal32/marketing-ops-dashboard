@@ -21,7 +21,8 @@ async function ghl(path) {
   }
 }
 
-const norm = s => String(s || "").toLowerCase().replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
+const TITLES = ["dr", "mr", "mrs", "ms", "miss", "prof"];
+const norm = s => String(s || "").toLowerCase().replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(t => t && !TITLES.includes(t));
 const sameName = (a, b) => { const x = norm(a), y = norm(b); if (!x.length || !y.length) return false; const [s, l] = x.length <= y.length ? [x, y] : [y, x]; return s.every((t, i) => t === l[i]); };
 const BAD = ["cancelled", "canceled", "noshow", "no_show", "invalid"];
 
@@ -47,7 +48,7 @@ module.exports = async (req, res) => {
     for (const c of list) {
       const row = { found: false };
       try {
-        const j = await ghl("/contacts/?locationId=" + encodeURIComponent(loc) + "&query=" + encodeURIComponent(c.name) + "&limit=10");
+        const j = await ghl("/contacts/?locationId=" + encodeURIComponent(loc) + "&query=" + encodeURIComponent(norm(c.name).join(" ")) + "&limit=10");
         const hits = (j.contacts || []).filter(x => sameName([x.firstName, x.lastName].filter(Boolean).join(" ") || x.contactName, c.name));
         if (hits.length) {
           row.found = true;
