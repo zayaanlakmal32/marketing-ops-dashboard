@@ -52,6 +52,7 @@ module.exports = async (req, res) => {
         if (hits.length) {
           row.found = true;
           const contact = hits[0];
+          if (contact.email) row.email = contact.email; // for the "Email client" button on Upsell
           const ev = await ghl("/contacts/" + encodeURIComponent(contact.id) + "/appointments");
           const appts = (ev.events || ev.appointments || [])
             .map(a => ({ start: a.startTime, status: String(a.appointmentStatus || a.status || "").toLowerCase(), title: a.title || "", calendar: calendars[a.calendarId] || "" }))
