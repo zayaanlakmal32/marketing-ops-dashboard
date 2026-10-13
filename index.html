@@ -258,11 +258,151 @@ body.locked nav.tabs,body.locked .user-chip{display:none}
 .view.enter .stat,.view.enter .panel,.view.enter .adcard,.view.enter .row,.view.enter tbody tr{animation:pop .5s var(--ease) both;animation-delay:calc(var(--i,0) * 45ms + 60ms)}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 @media (max-width:600px){.wrap,.top-in{padding-inline:16px} .top-right{margin-left:0;width:100%} nav.tabs{flex:1;overflow-x:auto} .stat b{font-size:24px}}
+
+/* ---- v2 layout (Oshara's mockups) ---- */
+h1{font-size:clamp(30px,4.2vw,46px);font-weight:700;letter-spacing:-.035em;margin-top:10px}
+.hero{padding-block:34px 22px}
+.hero-row{align-items:flex-end}
+.hero-right{display:flex;align-items:flex-end}
+.pills-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.bpill{display:inline-flex;align-items:center;padding:9px 16px;border-radius:999px;font-size:14px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;border:1px solid transparent}
+.bpill.bad{background:var(--bad-soft);color:var(--bad)}
+.bpill.warn{background:var(--warn-soft);color:var(--warn)}
+.bpill.blue{background:var(--blue-soft);color:var(--blue)}
+.bpill.good{background:var(--good-soft);color:var(--good)}
+.bpill.plain{background:var(--surface);color:var(--ink);border-color:var(--line-strong)}
+.panel{border-radius:18px;padding:22px 24px}
+.panel-h{border-bottom:0;padding-bottom:0;margin-bottom:14px}
+.panel-h h2{font-size:18px;font-weight:600}
+.panel-h a{font-size:13.5px;font-weight:500}
+.blk-n{font-size:16.5px;font-weight:600;letter-spacing:-.015em;color:var(--ink)}
+.linkbtn{background:none;border:0;padding:0;color:var(--blue);font:inherit;font-size:13px;font-weight:500;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.linkbtn:hover{color:var(--blue-2);border:0;background:none}
+.muted{color:var(--muted)!important}
+.warn-t{color:var(--warn);font-weight:500}
+.foot{display:flex;align-items:center;gap:10px;margin-top:22px}
+.sec-h{font-family:var(--mono);font-size:11.5px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:22px 0 10px}
+
+/* Today */
+.today-grid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:var(--gap);align-items:start}
+@media (max-width:900px){.today-grid{grid-template-columns:minmax(0,1fr)}}
+.blk{background:var(--bad-soft);border:1px solid var(--bad-soft);border-radius:14px;padding:16px;margin-bottom:12px;display:flex;flex-direction:column;gap:8px}
+.blk-h{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:4px}
+.blk-t{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--line);border-radius:10px;color:var(--ink);text-decoration:none;transition:border-color .2s,transform .2s}
+.blk-t:hover{border-color:var(--line-strong);color:var(--ink);transform:translateX(2px)}
+.blk-tn{flex:1;min-width:0;overflow-wrap:anywhere}
+.blk-ts{font-size:12.5px;color:var(--muted);white-space:nowrap}
+.blk-tl{font-size:12.5px;font-weight:600;color:var(--bad);white-space:nowrap;min-width:52px;text-align:right}
+.blk .linkbtn{align-self:flex-start;margin-top:2px}
+.untag{margin-top:6px}
+.untag-list{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.tint{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;margin-bottom:8px;font-size:14px}
+.tint.bad{background:var(--bad-soft)} .tint.bad b{color:var(--bad)}
+.tint.warn{background:var(--warn-soft)} .tint.warn b{color:var(--warn)}
+.tint b{font-weight:600;font-size:13.5px}
+.uw{padding:12px 0;border-top:1px solid var(--line)}
+.uw:first-of-type{border-top:0;padding-top:2px}
+.uw-h{display:flex;justify-content:space-between;gap:10px;margin-bottom:2px}
+
+/* Funnels */
+.frow{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px 24px;box-shadow:var(--shadow);display:grid;grid-template-columns:minmax(160px,1fr) minmax(0,2.4fr) minmax(220px,1.3fr);gap:20px 28px;align-items:center;margin-bottom:14px}
+@media (max-width:980px){.frow{grid-template-columns:minmax(0,1fr)}}
+.muted-s{font-size:12px;margin-top:2px}
+.frow-bars{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.frow-bars.notag{display:flex;flex-direction:column;gap:8px}
+.stg{display:flex;flex-direction:column;align-items:flex-start;gap:5px;background:none;border:0;padding:4px 0;border-radius:8px;text-align:left;color:var(--ink);min-width:0}
+.stg:hover{border:0;background:none;color:var(--ink)}
+.stg:hover .bar{filter:brightness(1.08)}
+.bar{display:block;width:100%;height:8px;border-radius:99px;background:var(--none)}
+.stg.done .bar{background:var(--good)} .stg.active .bar{background:var(--blue)} .stg.stuck .bar{background:var(--bad)}
+.stg.sel .bar{box-shadow:0 0 0 3px var(--blue-soft)}
+.stg-l{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.stg-c{font-size:13.5px;font-weight:600;color:var(--muted)}
+.stg.done .stg-c{color:var(--good)} .stg.active .stg-c{color:var(--blue)} .stg.stuck .stg-c{color:var(--bad)}
+.frow-r{display:flex;flex-direction:column;gap:8px;min-width:0}
+.next{font-size:13.5px;overflow-wrap:anywhere}
+.next a{color:var(--ink);text-decoration-color:var(--line-strong)}
+.pitch-in{width:100%;resize:none;overflow:hidden;font-size:13.5px;line-height:1.4;padding:9px 12px;min-height:40px;height:40px;display:block}
+.frow-r label.f{gap:4px}
+.frow-detail{grid-column:1 / -1;border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:6px}
+.frow-detail .panel-h{margin-bottom:6px}
+
+/* Upsell */
+.ulist{display:flex;flex-direction:column;gap:12px}
+.ucard{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px 24px;box-shadow:var(--shadow)}
+.urow{display:grid;grid-template-columns:minmax(150px,1fr) minmax(160px,1fr) minmax(0,1.9fr) minmax(150px,auto);gap:16px 28px;align-items:center}
+@media (max-width:980px){.urow{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+@media (max-width:560px){.urow{grid-template-columns:minmax(0,1fr)}}
+.dbar{height:8px;border-radius:99px;background:var(--none);overflow:hidden;margin-top:6px}
+.dbar i{display:block;height:100%;border-radius:99px;background:var(--blue)}
+.dbar i.warn{background:var(--warn)} .dbar i.bad{background:var(--bad)} .dbar i.none{background:transparent}
+.uoffer{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0}
+.uoffer-t{font-weight:600;font-size:15px;letter-spacing:-.01em}
+.uright{display:flex;flex-direction:column;align-items:flex-end;gap:6px;text-align:right}
+@media (max-width:980px){.uright{align-items:flex-start;text-align:left}}
+.btn.primary,a.btn.primary{display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(180deg,var(--blue),var(--blue-2));color:var(--blue-ink);border:0;text-decoration:none;padding:11px 20px;border-radius:10px;font-weight:600;font-size:14px;box-shadow:0 8px 20px -10px var(--blue)}
+a.btn.primary:hover{color:var(--blue-ink);filter:brightness(1.07)}
+.uright button.primary{padding:11px 20px;font-size:14px;font-weight:600;border-radius:10px}
+.up-form{margin-top:18px;padding-top:16px;border-top:1px dashed var(--line-strong);grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:720px){.up-form{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.form-btns{display:flex;gap:8px;align-items:center;grid-column:1 / -1;flex-wrap:wrap}
+details.later>summary{list-style:none;cursor:pointer}
+details.later>summary::-webkit-details-marker{display:none}
+details.later>summary::after{content:" · show";color:var(--blue)}
+details.later[open]>summary::after{content:" · hide"}
+
+/* Ads */
+.logdate{position:relative;display:inline-flex;align-items:center;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
+.logdate input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;padding:0;border:0}
+.adgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,460px),1fr));gap:var(--gap)}
+.adcard{border-radius:18px;padding:22px 24px;gap:16px}
+.adcard:hover{transform:none}
+.adcard .card-h{align-items:flex-start}
+.adcard .kpis{grid-template-columns:auto auto auto minmax(90px,1fr);gap:10px 26px;align-items:end}
+@media (max-width:520px){.adcard .kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.kspark{grid-column:1 / -1}}
+.adcard .kpis div span{display:block;margin-bottom:4px}
+.adcard .kpis div b{font-size:24px;font-weight:700}
+.adcard .kpis div b.up{color:var(--bad)}
+.adcard .kpis em{display:block;font-style:normal;font-size:12.5px;color:var(--muted);margin-top:2px}
+.spark{width:100%;height:48px}
+.spark.bad .spark-line{stroke:var(--bad)}
+.spark-empty{min-height:48px;font-size:12px;line-height:1.35}
+.note-box{background:var(--raise);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:13.5px;color:var(--ink-2)}
+.logform{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding-top:16px;border-top:1px solid var(--line)}
+.logform label.f.wide{grid-column:1 / -1}
+.logform input{width:100%;height:44px}
+.lf-row{display:flex;gap:10px}
+.lf-row input{flex:1}
+.lf-row button{height:44px;padding:0 22px;font-size:14px;font-weight:600}
+.card-f{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.set-form{grid-template-columns:repeat(3,minmax(0,1fr));padding:14px;border:1px dashed var(--line-strong);border-radius:12px;margin-top:0}
+.set-form .switch{grid-column:1 / -1}
+@media (max-width:520px){.set-form{grid-template-columns:minmax(0,1fr)}}
+.later-p{margin-top:var(--gap)}
+.later-p>summary{list-style:none;cursor:pointer}
+.later-p>summary::-webkit-details-marker{display:none}
+.later-p>summary h2::after{content:"Show";margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--blue)}
+.later-p[open]>summary h2::after{content:"Hide"}
+.later-p>summary h2{width:100%}
+.later-p[open]>summary{margin-bottom:10px}
+.off-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-top:1px solid var(--line)}
+.off-row + .set-form{margin-bottom:10px}
+
+/* Briefs */
+.bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:var(--gap)}
+.bcard{gap:14px}
+.goal-box{background:var(--raise);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.goal-box span{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.goal-box b{font-size:15px;font-weight:600}
+.deck{padding:12px 14px;background:var(--surface)}
+.deck-o{font-size:13px;color:var(--ink-2);font-weight:500}
+.view.enter .frow,.view.enter .ucard,.view.enter .blk,.view.enter .bpill{animation:pop .5s var(--ease) both;animation-delay:calc(var(--i,0) * 45ms + 60ms)}
+@media (max-width:600px){nav.tabs{flex:1 1 100%;order:-1}.pills-row{justify-content:flex-start}.hero-right{width:100%}.bpill{font-size:13px;padding:7px 12px}.panel,.frow,.ucard,.adcard{padding:18px}}
 </style>
 </head>
 <body>
 <header class="top"><div class="top-in">
-  <div class="brand"><span class="mark" aria-hidden="true"></span><span>Accelerate <em>Marketing Ops</em></span> <span class="draft">Draft v1</span></div>
+  <div class="brand"><span class="mark" aria-hidden="true"></span><span>Accelerate <em>Marketing Ops</em></span></div>
   <div class="top-right">
     <nav class="tabs" id="tabs" aria-label="Sections">
       <span class="pill" id="tab-pill" aria-hidden="true"></span>
@@ -277,53 +417,47 @@ body.locked nav.tabs,body.locked .user-chip{display:none}
   </div>
 </div></header>
 <main class="wrap" id="app">
-  <div class="hero"><div><div class="eyebrow">Loading</div><h1>Pulling live <em>funnel</em> data from Notion</h1><p class="note">Reading PM Engine v2, the Project Tracker and the Strategy Board.</p></div></div>
+  <div class="hero"><div><div class="eyebrow">Loading</div><h1>Pulling live data from Notion</h1></div></div>
 </main>
 <div id="toast-root"></div>
 
 <script>
 (function(){
 /* ---------- constants ---------- */
-const NOTION = "Notion";
-const TOOL = "notion-query-data-sources";
-const DS = {
-  tracker: "collection://b6b396fe-f0cf-4d7e-9845-e18c630c0ae7",
-  projects: "collection://2b1b6494-fc14-82b9-8659-872f524ab1fd",
-  tasks: "collection://9acb6494-fc14-8290-af49-87a1c6c613ed",
-  board: "collection://309b6494-fc14-8073-ae13-000b7a00ba6e"
-};
 const STAGES = ["Ads","Landing page","Lead magnet","CRM + automations","Nurture"];
+const STAGE_SHORT = {"CRM + automations":"CRM"};
 const ADDONS = ["Meta Ads setup & Management","CRM Setup","Manychat Setup","Website Optimization","Website Build (From scratch)","Editing"];
-const ISSUE_TO_ADDON = {
-  "6.1":"Website Optimization","6.5":"CRM Setup","6.6":"Meta Ads setup & Management","6.7":"Manychat Setup","6.2":"Meta Ads setup & Management","6.4":"Meta Ads setup & Management"
-};
+const ADDON_LABEL = {"Meta Ads setup & Management":"Meta Ads setup + management","CRM Setup":"CRM setup","Manychat Setup":"ManyChat setup","Website Optimization":"Website optimisation","Website Build (From scratch)":"Website build","Editing":"Editing"};
+const ISSUE_TO_ADDON = {"6.1":"Website Optimization","6.5":"CRM Setup","6.6":"Meta Ads setup & Management","6.7":"Manychat Setup","6.2":"Meta Ads setup & Management","6.4":"Meta Ads setup & Management"};
+const ROUTES = ["Gap","Win","Client ask"];
+const ROUTE_CLS = {Gap:"warn",Win:"good","Client ask":""};
 const CUR = {USD:"$",AUD:"A$",LKR:"Rs ",GBP:"£",NZD:"NZ$",CAD:"C$"};
 const STUCK_STATUSES = ["Need Feedback","Need Revision"];
+const RESULT_TYPES = ["Leads","Purchases","Bookings","Messages","Results"];
+const COST_LABEL = {Leads:"Cost / lead",Purchases:"Cost / purchase",Bookings:"Cost / booking",Messages:"Cost / message",Results:"Cost / result"};
 
 /* ---------- state ---------- */
-const S = {
-  clients:[], projects:[], tasks:[], board:[],
-  err:{core:null,tasks:null}, loading:true, loadedAt:null,
-  ads:[], upsell:{}, adsOn:false, upsellOn:false, saving:false
-};
-const UI = {tab:"today", selCell:null, briefQ:"", adClient:"all"};
+const S = {clients:[],projects:[],tasks:[],archive:[],ads:[],upsell:{},adClients:{},err:{core:null},loading:true,loadedAt:null,adsOn:false,upsellOn:false,adClientsOn:false};
+const UI = {tab:"today",selCell:null,briefQ:"",manage:{},blkOpen:{},showUntagged:false,editUp:{}};
 try{const t=localStorage.getItem("mo2-tab"); if(t) UI.tab=t;}catch(e){}
 if(/^#(today|funnels|upsell|ads|briefs)$/.test(location.hash)) UI.tab=location.hash.slice(1);
 
 /* ---------- helpers ---------- */
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const id32=s=>{const m=String(s||"").replace(/-/g,"").match(/[0-9a-f]{32}/i);return m?m[0].toLowerCase():null};
-const arr=v=>{if(Array.isArray(v))return v;if(v==null||v==="")return[];try{const x=JSON.parse(v);return Array.isArray(x)?x:[]}catch(e){return[]}};
 const nlink=id=>"https://www.notion.so/"+id;
 function iso(d){const x=new Date(d);x.setMinutes(x.getMinutes()-x.getTimezoneOffset());return x.toISOString().slice(0,10)}
 const TODAY=iso(new Date());
+const YESTERDAY=addDays(TODAY,-1);
 function addDays(s,n){const d=new Date(s+"T00:00:00");d.setDate(d.getDate()+n);return iso(d)}
 function diff(a,b){return Math.round((new Date(b+"T00:00:00")-new Date(a+"T00:00:00"))/864e5)}
 function fmtDate(s){if(!s)return"";return new Date(s.slice(0,10)+"T00:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"short"})}
+function fmtDay(s){return new Date(s.slice(0,10)+"T00:00:00").toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"})}
+function weekday(s){return new Date(s+"T00:00:00").toLocaleDateString("en-GB",{weekday:"long"})}
 function money(v,c){if(v==null||isNaN(v))return"–";const sym=CUR[c]||"$";return sym+(v>=100?Math.round(v).toLocaleString():(+v).toFixed(2))}
-function firstKey(name){const w=String(name||"").toLowerCase().replace(/[^a-z\s]/g," ").split(/\s+/).filter(x=>x&&x.length>2&&x!=="the");return w[0]||null}
-function toast(msg){const r=$("#toast-root");r.innerHTML='<div class="toast" role="status">'+esc(msg)+'</div>';clearTimeout(toast._t);toast._t=setTimeout(()=>{r.innerHTML=""},2200)}
+function compact(n){n=+n;if(!isFinite(n))return"";const f=(v,s)=>(Math.round(v*10)/10).toString().replace(/\.0$/,"")+s;return n>=1e6?f(n/1e6,"M"):n>=1e3?f(n/1e3,"K"):String(n)}
+function toast(msg){const r=$("#toast-root");r.innerHTML='<div class="toast" role="status">'+esc(msg)+'</div>';clearTimeout(toast._t);toast._t=setTimeout(()=>{r.innerHTML=""},2400)}
+const plural=(n,a,b)=>n+" "+(n===1?a:(b||a+"s"));
 
 /* ---------- data from /api (Notion token stays on the server) ---------- */
 async function api(path,opts){
@@ -333,21 +467,19 @@ async function api(path,opts){
   if(!res.ok){const err=new Error(j.message||("Request failed ("+res.status+")"));err.code=j.error||res.status;throw err}
   return j;
 }
-function errText(e){
-  if(e&&e.code==="locked")return{msg:"locked",retry:false};
-  return{msg:(e&&e.message)||"Couldn't load data from Notion.",retry:true};
-}
 async function loadAll(fresh){
-  S.loading=true;S.err.core=null;S.err.tasks=null;render();
+  S.loading=true;S.err.core=null;render();
   try{
     const d=await api("/api/data"+(fresh?"?fresh="+Date.now():""));
-    S.clients=d.clients||[];S.projects=d.projects||[];S.tasks=d.tasks||[];S.board=d.board||[];
-    S.locked=false;S.user=d.user&&d.user!=="open"?d.user:null;S.adsOn=Array.isArray(d.ads);S.upsellOn=!!d.upsell;
+    S.clients=d.clients||[];S.projects=d.projects||[];S.tasks=d.tasks||[];
+    S.archive=d.archive||[];S.archiveError=d.archiveError||null;S.bookingUrl=d.bookingUrl||null;
+    S.locked=false;S.user=d.user&&d.user!=="open"?d.user:null;
+    S.adsOn=Array.isArray(d.ads);S.upsellOn=!!d.upsell;S.adClientsOn=!!d.adClients;
     const names={};S.clients.forEach(c=>{names[c.id]=c.name});
     S.ads=(d.ads||[]).map(a=>Object.assign({},a,{clientName:names[a.clientId]||"Unknown client"}));
-    S.upsell=d.upsell||{};S.adClients=d.adClients||{};S.adClientsOn=!!d.adClients;
+    S.upsell=d.upsell||{};S.adClients=d.adClients||{};
     S.loadedAt=Date.parse(d.loadedAt)||Date.now();
-  }catch(e){if(e&&e.code==="locked"){S.locked=true;S.user=null}else S.err.core=errText(e)}
+  }catch(e){if(e&&e.code==="locked"){S.locked=true;S.user=null}else S.err.core={msg:(e&&e.message)||"Couldn't load data from Notion."}}
   S.loading=false;if(UI.animOnLoad){UI.anim=true;UI.animOnLoad=false}render();
 }
 
@@ -356,10 +488,18 @@ const clientById=id=>S.clients.find(c=>c.id===id);
 const isOpen=t=>t.status!=="Done";
 const isOverdue=t=>isOpen(t)&&t.due&&t.due.slice(0,10)<TODAY;
 const isStuck=t=>isOpen(t)&&(STUCK_STATUSES.includes(t.status)||isOverdue(t));
+const lateDays=t=>diff(t.due.slice(0,10),TODAY);
 function projectsFor(cid){return S.projects.filter(p=>p.clientIds.includes(cid))}
 function tasksFor(cid){const pids=new Set(projectsFor(cid).map(p=>p.id));return S.tasks.filter(t=>t.projectIds.some(x=>pids.has(x)))}
 function clientOfTask(t){const p=S.projects.find(p=>t.projectIds.includes(p.id));return p?clientById(p.clientIds[0]):null}
+// The one client list every tab uses: clients with a live PM Engine project (Client set, not Paused/Done).
 function funnelClients(){return S.clients.filter(c=>projectsFor(c.id).length)}
+function subLine(c,extra){return [projectsFor(c.id).map(p=>p.name).join(", ")].concat(extra||[]).concat(c.po?["PO "+c.po]:[]).filter(Boolean).join(" · ")}
+function archiveFor(cid){return S.archive.filter(a=>a.clientId===cid).sort((a,b)=>String(a.stage).localeCompare(String(b.stage)))}
+function phaseNum(s){const m=/phase\s*0?(\d)/i.exec(s||"");return m?+m[1]:null}
+function phaseOf(c){const n=phaseNum(c.stage);if(n)return n;const a=archiveFor(c.id);return a.length?phaseNum(a[a.length-1].stage):null}
+const phaseLabel=n=>n?"Phase 0"+n:null;
+
 function stageState(cid,st){
   const ts=tasksFor(cid).filter(t=>t.stage===st);
   const open=ts.filter(isOpen),done=ts.length-open.length;
@@ -367,28 +507,50 @@ function stageState(cid,st){
   if(open.some(isStuck))state="stuck";else if(open.length)state="active";else if(done)state="done";
   return{state,open:open.length,done,tasks:ts};
 }
-const STATE_LABEL={done:"Done",active:"In progress",stuck:"Stuck",empty:"Not started"};
-function boardFor(c){
-  const k=firstKey(c.name);if(!k)return[];
-  return S.board.filter(b=>String(b.client||"").toLowerCase().includes(k)||String(b.title||"").toLowerCase().includes(k));
+function nextTask(cid){
+  const open=tasksFor(cid).filter(isOpen);
+  open.sort((a,b)=>(isOverdue(b)-isOverdue(a))||((a.due||"9")<(b.due||"9")?-1:(a.due||"9")>(b.due||"9")?1:0));
+  return open[0]||null;
+}
+
+/* upsell: route + suggested offer, editable and saved to Upsell Checkpoints */
+function bundle(addon,c){
+  const base=ADDON_LABEL[addon]||addon;
+  return addon!=="CRM Setup"&&!c.addons.includes("CRM Setup")&&addon!=="Meta Ads setup & Management"?base+" + CRM bundle":base;
+}
+function autoUpsell(c){
+  const code=c.issue?String(c.issue).slice(0,3):null;
+  const addon=code&&ISSUE_TO_ADDON[code];
+  if(addon&&!c.addons.includes(addon)){
+    const txt=String(c.issue).replace(/^\s*\d+\.\d+\s*[-–:.]?\s*/,"").trim();
+    return{route:"Gap",offer:bundle(addon,c),reason:(txt?txt.charAt(0).toUpperCase()+txt.slice(1,70)+(txt.length>70?"…":""):"Funnel blocker")+" ("+code+")."};
+  }
+  if(c.pstage==="Funnel Creation & Ad Setup"&&!c.addons.includes("Meta Ads setup & Management"))
+    return{route:"Gap",offer:c.addons.includes("CRM Setup")?"Ads management":"Ads management + CRM bundle",reason:"In ad setup with no ads add-on."};
+  const last=archiveFor(c.id).slice(-1)[0];
+  if(last&&last.progress!=null){const pct=last.progress>1.5?last.progress:last.progress*100;
+    if(pct>=100){const next=["Meta Ads setup & Management","CRM Setup","Manychat Setup"].find(a=>!c.addons.includes(a));
+      return{route:"Win",offer:next?"Next phase + "+ADDON_LABEL[next]:"Next phase renewal",reason:"Hit "+Math.round(pct)+"% of the "+(last.stage||"last phase")+" goal."}}}
+  return{route:"",offer:"",reason:""};
 }
 function upsellInfo(c){
   const day=c.start?diff(c.start.slice(0,10),TODAY)+1:null;
-  const missing=ADDONS.filter(a=>!c.addons.includes(a));
-  const signals=[];
-  if(day!=null&&day>=60&&day<=90)signals.push({kind:"warn",text:"Day "+day+" of 90: renewal window"});
-  else if(day!=null&&day>90)signals.push({kind:"warn",text:"Past day 90 (day "+day+")"});
-  const code=c.issue?String(c.issue).slice(0,3):null;
-  if(code&&ISSUE_TO_ADDON[code]&&missing.includes(ISSUE_TO_ADDON[code]))signals.push({kind:"bad",text:"Blocker "+code+" → offer "+ISSUE_TO_ADDON[code]});
-  if(c.pstage==="Funnel Creation & Ad Setup"&&missing.includes("Meta Ads setup & Management"))signals.push({kind:"blue",text:"In funnel & ad setup, no ads add-on yet"});
   const cp=S.upsell[c.id]||null;
-  let due=false;
-  if(cp&&cp.nextDate&&cp.status!=="won"&&cp.status!=="declined"){const d=diff(TODAY,cp.nextDate);due=d<=7;}
-  return{day,missing,signals,cp,due};
+  const auto=autoUpsell(c);
+  const route=(cp&&cp.route)||auto.route;
+  const offer=(cp&&cp.offer)||auto.offer;
+  const reason=auto.reason||(cp&&cp.note)||"";
+  const closed=!!(cp&&["won","declined"].includes(cp.status));
+  const closedThisWeek=closed&&cp.nextDate&&Math.abs(diff(TODAY,cp.nextDate))<=7;
+  const callBooked=!closed&&cp&&cp.nextDate&&cp.nextDate>=TODAY;
+  const act=!closed&&(callBooked||(route&&(day==null||day>=30))||(day!=null&&day>=60));
+  const coming=!closed&&!act&&(!!route||(day!=null&&day>=20));
+  return{day,cp,auto,route,offer,reason,closed,closedThisWeek,callBooked,act,coming};
 }
-const COST_LABEL={Leads:"Cost per lead",Purchases:"CPA",Bookings:"Cost per booking",Messages:"Cost per message",Results:"Cost per result"};
+
+/* ads */
 function adSet(cid){return (S.adClients&&S.adClients[cid])||null}
-function runningClients(){return S.clients.filter(c=>{const s=adSet(c.id);return s&&s.running})}
+function runningClients(){return funnelClients().filter(c=>{const s=adSet(c.id);return s&&s.running})}
 function adInfo(cid){
   const set=adSet(cid);
   const logs=S.ads.filter(a=>a.clientId===cid).sort((a,b)=>a.date<b.date?-1:1);
@@ -398,259 +560,265 @@ function adInfo(cid){
   const target=set&&set.target!=null&&set.target!==""?+set.target:null;
   const inRange=(a,b)=>logs.filter(l=>l.date>=a&&l.date<=b);
   const sum=(xs,k)=>xs.reduce((s,l)=>s+(+l[k]||0),0);
-  const w=inRange(addDays(TODAY,-7),addDays(TODAY,-1)),p=inRange(addDays(TODAY,-14),addDays(TODAY,-8));
+  const w=inRange(addDays(TODAY,-7),YESTERDAY),p=inRange(addDays(TODAY,-14),addDays(TODAY,-8));
   const s7=sum(w,"spend"),r7=sum(w,"results"),sp=sum(p,"spend"),rp=sum(p,"results");
   const cpr7=r7>0?s7/r7:null,cprP=rp>0?sp/rp:null;
-  const flags=[];
-  if(target!=null&&cpr7!=null&&cpr7>target)flags.push("Over target ("+money(cpr7,cur)+" vs "+money(target,cur)+")");
-  if(cpr7!=null&&cprP!=null&&cpr7>cprP*1.25)flags.push(COST_LABEL[label]+" up "+Math.round((cpr7/cprP-1)*100)+"% on last week");
-  if(s7>0&&r7===0)flags.push(money(s7,cur)+" spent, no "+label.toLowerCase());
-  const status=!w.length?"nodata":flags.length?"flagged":"ok";
-  const yesterday=addDays(TODAY,-1);
-  const loggedYesterday=logs.some(l=>l.date===yesterday);
-  const series=inRange(addDays(TODAY,-14),addDays(TODAY,-1)).filter(l=>l.results>0).map(l=>({d:l.date,v:l.spend/l.results}));
+  const change=cpr7!=null&&cprP!=null?(cpr7/cprP-1)*100:null;
+  const over=target!=null&&cpr7!=null&&cpr7>target;
+  const costUp=change!=null&&change>25;
+  const noResults=s7>0&&r7===0;
+  const loggedYesterday=logs.some(l=>l.date===YESTERDAY);
+  let status="ok";
+  if(over)status="over";else if(costUp||noResults)status="check";else if(!loggedYesterday)status="notlogged";else if(!w.length)status="nodata";
+  let note;
+  if(over||costUp)note=change!=null&&change>0?"Cost up "+Math.round(change)+"% on last week.":"Cost per "+label.toLowerCase().replace(/s$/,"")+" is above target.";
+  else if(noResults)note=money(s7,cur)+" spent this week with no "+label.toLowerCase()+".";
+  else if(!loggedYesterday)note=weekday(YESTERDAY)+" not logged yet.";
+  else if(!w.length)note="Nothing logged this week yet.";
+  else note=target!=null?"Under target.":"Looking steady.";
   const lastNote=logs.slice().reverse().find(l=>l.note);
-  return{set,label,cur,target,s7,r7,cpr7,cprP,flags,status,loggedYesterday,series,lastNote,last:latest?latest.date:null,count:logs.length};
+  if(lastNote&&status==="ok")note="Last change ("+fmtDate(lastNote.date)+"): "+lastNote.note;
+  const series=inRange(addDays(TODAY,-14),YESTERDAY).filter(l=>l.results>0).map(l=>({d:l.date,v:l.spend/l.results}));
+  return{set,label,cur,target,s7,r7,cpr7,change,over,status,note,loggedYesterday,series,last:latest?latest.date:null,logs};
 }
-function spark(series,target){
-  if(series.length<2)return"";
-  const W=260,H=56,pad=4,vals=series.map(s=>s.v).concat(target!=null?[target]:[]);
+const AD_PILL={over:'<span class="pill bad">Over target</span>',check:'<span class="pill bad">Check</span>',notlogged:'<span class="pill warn">Not logged</span>',nodata:'<span class="pill muted">No data</span>',ok:'<span class="pill good">On track</span>'};
+function spark(series,target,bad){
+  if(series.length<2)return'<div class="spark-empty note">Trend shows after 2 days of results.</div>';
+  const W=140,H=48,pad=4,vals=series.map(s=>s.v).concat(target!=null?[target]:[]);
   const mn=Math.min(...vals),mx=Math.max(...vals),rng=mx-mn||1;
   const x=i=>pad+i*(W-2*pad)/(series.length-1),y=v=>H-pad-(v-mn)*(H-2*pad)/rng;
   const pts=series.map((s,i)=>x(i).toFixed(1)+","+y(s.v).toFixed(1)).join(" ");
-  const last=series[series.length-1];
-  return '<svg class="spark" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" aria-hidden="true">'+
+  return '<svg class="spark'+(bad?" bad":"")+'" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" aria-hidden="true">'+
     (target!=null?'<line x1="0" x2="'+W+'" y1="'+y(target).toFixed(1)+'" y2="'+y(target).toFixed(1)+'" class="spark-target"/>':'')+
-    '<polygon points="'+x(0).toFixed(1)+','+H+' '+pts+' '+x(series.length-1).toFixed(1)+','+H+'" class="spark-area"/>'+
-    '<polyline points="'+pts+'" class="spark-line"/>'+
-    '<circle cx="'+x(series.length-1).toFixed(1)+'" cy="'+y(last.v).toFixed(1)+'" r="3" class="spark-dot"/></svg>';
+    '<polyline points="'+pts+'" class="spark-line"/></svg>';
 }
-const STATUS_PILL={nodata:'<span class="pill muted">No data</span>',ok:'<span class="pill good">On track</span>',flagged:'<span class="pill bad">Flagged</span>'};
 
-/* ---------- render ---------- */
-function setTab(t){if(t!==UI.tab)UI.anim=true;UI.tab=t;try{localStorage.setItem("mo2-tab",t)}catch(e){}render();window.scrollTo(0,0)}
+/* ---------- shared bits ---------- */
+function setTab(t){if(t!==UI.tab)UI.anim=true;UI.tab=t;try{localStorage.setItem("mo2-tab",t)}catch(e){}history.replaceState(null,"","#"+t);render();window.scrollTo(0,0)}
 function renderTabs(){
-  const overdue=S.tasks.filter(isStuck).length;
+  const overdue=S.tasks.filter(isOverdue).length;
   document.querySelectorAll("#tabs button").forEach(b=>{
     const t=b.dataset.tab;b.setAttribute("aria-current",t===UI.tab?"page":"false");
     const label={today:"Today",funnels:"Funnels",upsell:"Upsell",ads:"Ads",briefs:"Briefs"}[t];
     b.innerHTML=esc(label)+(t==="today"&&overdue?'<span class="count">'+overdue+'</span>':"");
   });
 }
-function errBanner(e,where){
-  if(!e)return"";
-  return '<div class="banner bad" role="alert"><span>'+esc(e.msg)+'</span>'+(e.retry?'<button type="button" data-act="reload">Try again</button>':"")+'</div>';
+function errBanner(){const e=S.err.core;if(!e)return"";return '<div class="banner bad" role="alert"><span>'+esc(e.msg)+'</span><button type="button" data-act="reload">Try again</button></div>'}
+function hero(eyebrow,title,right){
+  return '<div class="hero"><div class="hero-row"><div><div class="eyebrow">'+eyebrow+'</div><h1>'+title+'</h1></div>'+(right?'<div class="hero-right">'+right+'</div>':'')+'</div></div>';
 }
-function freshLine(){
-  if(S.loading)return'<span class="fresh">Refreshing…</span>';
-  return S.loadedAt?'<span class="fresh">Notion data as of '+new Date(S.loadedAt).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})+'</span>':"";
+function bpill(cls,text){return '<span class="bpill '+cls+'">'+text+'</span>'}
+function footer(){
+  return '<div class="foot">'+(S.loading?'<span class="fresh">Refreshing…</span>':S.loadedAt?'<span class="fresh">Notion data as of '+new Date(S.loadedAt).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})+'</span>':'')+'<button type="button" class="ghost" data-act="reload">Refresh</button></div>';
 }
-function taskRow(t,showClient){
-  const c=showClient?clientOfTask(t):null;
-  const sev=isOverdue(t)?"bad":STUCK_STATUSES.includes(t.status)?"warn":t.status==="Done"?"good":"blue";
-  const bits=[];
-  if(c)bits.push('<b>'+esc(c.name)+'</b>');
-  bits.push(esc(t.status));
-  if(t.due)bits.push((isOverdue(t)?'<span class="up">Due '+fmtDate(t.due)+' · '+diff(t.due.slice(0,10),TODAY)+'d late</span>':'Due '+fmtDate(t.due)));
-  return '<div class="row"><span class="sev '+sev+'"></span><div class="main"><div class="t"><a href="'+nlink(t.id)+'" target="_blank" rel="noopener">'+esc(t.name||"Untitled task")+'</a></div><div class="m">'+bits.join(" · ")+'</div></div>'+(t.stage?'<span class="pill muted">'+esc(t.stage)+'</span>':'<span class="pill warn">No stage</span>')+'</div>';
+function emptyClients(){
+  return '<section class="panel"><div class="empty">'+(S.loading?"Loading…":'No live PM Engine projects are linked to a client yet. In <b>PM Engine v2 → Projects</b>, pick the client in the <b>Client</b> column.')+'</div></section>';
 }
+const dateLine=()=>new Date().toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"});
 
+/* ---------- Today ---------- */
 function viewToday(){
-  const running=runningClients();
-  const infos=running.map(c=>({c,a:adInfo(c.id)}));
-  const flagged=infos.filter(x=>x.a.status==="flagged");
-  const notLogged=infos.filter(x=>!x.a.loggedYesterday);
-  const stuck=S.tasks.filter(isStuck);
-  const overdue=S.tasks.filter(isOverdue);
-  const ups=S.clients.map(c=>({c,u:upsellInfo(c)}));
-  const upDue=ups.filter(x=>x.u.due).sort((a,b)=>a.u.cp.nextDate<b.u.cp.nextDate?-1:1);
-  const closed=ups.filter(x=>x.u.cp&&["won","declined"].includes(x.u.cp.status)&&x.u.cp.nextDate&&Math.abs(diff(TODAY,x.u.cp.nextDate))<=7).sort((a,b)=>a.u.cp.nextDate<b.u.cp.nextDate?1:-1);
-  const closedIds=new Set(closed.map(x=>x.c.id));
-  const upSignals=ups.filter(x=>x.u.signals.length&&!x.u.due&&!closedIds.has(x.c.id)).sort((a,b)=>b.u.signals.length-a.u.signals.length);
-  const untagged=S.tasks.filter(t=>!t.stage&&isOpen(t));
-  let h='<div class="hero"><div><div class="eyebrow">'+new Date().toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"})+'</div><h1>What needs <em>you</em> today</h1></div>'+
-    '<div class="stats">'+
-      '<div class="stat"><b>'+running.length+'</b><span>Clients running ads</span></div>'+
-      '<div class="stat '+(flagged.length?"bad":"")+'"><b>'+flagged.length+'</b><span>Ads flagged</span></div>'+
-      '<div class="stat '+(notLogged.length?"warn":"")+'"><b>'+notLogged.length+'</b><span>Ads not logged yesterday</span></div>'+
-      '<div class="stat"><b>'+upDue.length+'</b><span>Upsells due this week</span></div>'+
-      '<div class="stat '+(overdue.length?"bad":"")+'"><b>'+overdue.length+'</b><span>Overdue tasks</span></div>'+
-    '</div></div>';
-  h+='<div class="toolbar">'+freshLine()+'<button type="button" class="ghost" data-act="reload">Refresh</button></div>';
-  h+=errBanner(S.err.core)+errBanner(S.err.tasks);
-  // 1. Ads
-  const order={flagged:0,nodata:1,ok:2};
-  h+='<section class="panel"><div class="panel-h"><h2>Ads <em>this week</em> <span class="sub">last 7 days</span></h2><button type="button" class="ghost" data-tab-go="ads">Open morning ad check</button></div>';
-  if(!running.length)h+='<div class="empty">No clients are set to running ads yet. Switch them on under <b>Ad settings</b> on the Ads tab.</div>';
-  else h+=infos.sort((x,y)=>order[x.a.status]-order[y.a.status]).map(({c,a})=>'<div class="row"><span class="sev '+(a.status==="flagged"?"bad":a.status==="ok"?"good":"")+'"></span><div class="main"><div class="t">'+esc(c.name)+'</div><div class="m">'+money(a.s7,a.cur)+' spend · '+a.r7+' '+esc(a.label.toLowerCase())+' · '+esc(COST_LABEL[a.label])+' '+money(a.cpr7,a.cur)+(a.target!=null?' (target '+money(a.target,a.cur)+')':'')+(a.loggedYesterday?'':' · <span class="up">not logged yesterday</span>')+'</div>'+(a.flags.length?'<div class="m up">'+esc(a.flags.join(" · "))+'</div>':'')+'</div>'+STATUS_PILL[a.status]+'</div>').join("");
-  h+='</section>';
-  h+='<div class="grid g-2" style="margin-top:var(--gap)"><div class="stack">';
-  // 2. Upsells
-  h+='<section class="panel"><div class="panel-h"><h2>Upsell <em>this week</em></h2><button type="button" class="ghost" data-tab-go="upsell">Open Upsell</button></div>'+
-    (upDue.length?upDue.map(({c,u})=>'<div class="row"><span class="sev warn"></span><div class="main"><div class="t">'+esc(c.name)+'</div><div class="m">'+esc(u.cp.offer||"Offer not set")+' · '+fmtDate(u.cp.nextDate)+(u.cp.note?' · '+esc(u.cp.note):'')+'</div></div><span class="pill muted">'+esc(u.cp.status||"planned")+'</span></div>').join(""):'<div class="empty">No checkpoints due in the next 7 days.</div>')+
-    (closed.length?'<div class="sub-h">Closed this week</div>'+closed.map(({c,u})=>{const won=u.cp.status==="won";return '<div class="row"><span class="sev '+(won?"good":"bad")+'"></span><div class="main"><div class="t">'+esc(c.name)+'</div><div class="m">'+esc(u.cp.offer||"Offer not set")+' · '+fmtDate(u.cp.nextDate)+(u.cp.note?' · '+esc(u.cp.note):'')+'</div></div><span class="pill '+(won?"good":"bad")+'">'+(won?"Won":"Declined")+'</span></div>'}).join(""):'')+
-    (upSignals.length?'<div class="sub-h">Also worth a look</div>'+upSignals.slice(0,6).map(({c,u})=>'<div class="row"><span class="sev blue"></span><div class="main"><div class="t">'+esc(c.name)+'</div><div class="m">'+esc(u.signals.map(s=>s.text).join(" · "))+'</div></div></div>').join(""):'')+'</section>';
-  h+='</div><div class="stack">';
-  // 3. Overdue
-  h+='<section class="panel"><div class="panel-h"><h2>Stuck or <em>overdue</em> <span class="sub">'+stuck.length+' tasks</span></h2></div>'+(stuck.length?stuck.sort((a,b)=>(a.due||"9")<(b.due||"9")?-1:1).map(t=>taskRow(t,true)).join(""):'<div class="empty">Nothing stuck. Overdue tasks and tasks marked <b>Need Feedback</b> or <b>Need Revision</b> show here.</div>')+'</section>';
-  if(untagged.length)h+='<section class="panel"><div class="panel-h"><h2>Tasks with no <em>stage</em> <span class="sub">'+untagged.length+'</span></h2></div><p class="note" style="margin:0 0 6px">Set <b>Funnel Stage</b> on these in Notion so they land in the Funnels grid.</p>'+untagged.map(t=>taskRow(t,true)).join("")+'</section>';
-  h+='</div></div>';
-  return h;
-}
-
-function viewFunnels(){
   const fc=funnelClients();
-  let h='<div class="hero"><div class="hero-row"><div><div class="eyebrow">PM Engine v2</div><h1>Funnel <em>progress</em> by client</h1></div><div class="legend"><span><i style="background:var(--good)"></i>Done</span><span><i style="background:var(--blue)"></i>In progress</span><span><i style="background:var(--bad)"></i>Stuck or overdue</span><span><i style="border:1.5px solid var(--none)"></i>Not started</span></div></div></div>';
-  h+=errBanner(S.err.core)+errBanner(S.err.tasks);
-  if(!fc.length){h+='<section class="panel"><div class="empty">'+(S.loading?"Loading…":'No PM Engine projects are linked to a client yet. Open a project in <b>PM Engine v2 → Projects</b> and pick the client in the <b>Client</b> column.')+'</div></section>';return h}
-  h+='<section class="panel"><div class="tbl-wrap"><table class="map"><colgroup><col class="cname"><col class="cstage"><col class="cstage"><col class="cstage"><col class="cstage"><col class="cstage"><col class="copen"><col class="cpitch"></colgroup><thead><tr><th>Client</th>'+STAGES.map(s=>'<th>'+esc(s)+'</th>').join("")+'<th class="r">Open</th><th>Pitch update</th></tr></thead><tbody>';
-  fc.forEach(c=>{
-    const all=tasksFor(c.id),ps=projectsFor(c.id);
-    h+='<tr><td class="name">'+esc(c.name)+'<div class="note">'+ps.map(p=>'<a href="'+nlink(p.id)+'" target="_blank" rel="noopener">'+esc(p.name)+'</a>').join(", ")+'</div></td>';
-    STAGES.forEach(st=>{
-      const s=stageState(c.id,st);const key=c.id+"|"+st;
-      h+='<td><button type="button" class="mapcell '+s.state+(UI.selCell===key?" sel":"")+'" data-cell="'+esc(key)+'"><span class="s">'+STATE_LABEL[s.state]+'</span><span class="c">'+(s.tasks.length?s.done+'/'+s.tasks.length+' done':'No tasks')+'</span></button></td>';
-    });
-    h+='<td class="r">'+all.filter(isOpen).length+'</td><td class="pitch-cell">'+ps.map(p=>(ps.length>1?'<span class="note">'+esc(p.name)+'</span>':'')+'<textarea class="pitch-in" rows="2" id="pitch-'+p.id+'" data-pitch="'+p.id+'" placeholder="What are we pitching?">'+esc(p.pitch||"")+'</textarea>').join("")+'</td></tr>';
+  const fcIds=new Set(fc.map(c=>c.id));
+  const overdue=S.tasks.filter(isOverdue);
+  const running=runningClients().map(c=>({c,a:adInfo(c.id)}));
+  const notLogged=running.filter(x=>!x.a.loggedYesterday);
+  const ups=fc.map(c=>({c,u:upsellInfo(c)}));
+  const windows=ups.filter(x=>x.u.act).sort((a,b)=>(b.u.day||0)-(a.u.day||0));
+  const pills=(overdue.length?bpill("bad",plural(overdue.length,"overdue funnel task")):bpill("good","No overdue tasks"))+
+    (running.length?(notLogged.length?bpill("warn",plural(notLogged.length,"ad")+" not logged"):bpill("good","Ads all logged")):"")+
+    bpill("blue",plural(windows.length,"upsell window")+" open");
+  let h=hero(dateLine(),"What needs you today",'<div class="pills-row">'+pills+'</div>');
+  h+=errBanner();
+  // Funnel blockers, grouped by client
+  const groups={};
+  S.tasks.filter(isStuck).forEach(t=>{const c=clientOfTask(t);if(!c||!fcIds.has(c.id))return;(groups[c.id]=groups[c.id]||{c,ts:[]}).ts.push(t)});
+  const gl=Object.values(groups).map(g=>{g.ts.sort((a,b)=>(a.due||"9")<(b.due||"9")?-1:1);g.od=g.ts.filter(isOverdue);g.oldest=g.od.length?lateDays(g.od[0]):0;return g}).sort((a,b)=>b.od.length-a.od.length||b.oldest-a.oldest);
+  const untagged=S.tasks.filter(t=>!t.stage&&isOpen(t));
+  h+='<div class="today-grid"><section class="panel"><div class="panel-h"><h2>Funnel blockers</h2><a href="#funnels" data-tab-go="funnels">Open Funnels</a></div>';
+  if(!gl.length)h+='<div class="empty">'+(S.loading?"Loading…":"No funnel blockers. Overdue tasks and tasks waiting on feedback show here.")+'</div>';
+  gl.forEach(g=>{
+    const open=UI.blkOpen[g.c.id],shown=open?g.ts:g.ts.slice(0,4);
+    const tag=g.od.length?g.od.length+" overdue · oldest "+g.oldest+"d":plural(g.ts.length,"task")+" waiting";
+    h+='<div class="blk"><div class="blk-h"><div><div class="blk-n">'+esc(g.c.name)+'</div><div class="note">'+esc(subLine(g.c))+'</div></div><span class="pill '+(g.od.length?"bad":"warn")+'">'+esc(tag)+'</span></div>'+
+      shown.map(t=>'<a class="blk-t" href="'+nlink(t.id)+'" target="_blank" rel="noopener"><span class="blk-tn">'+esc(t.name||"Untitled task")+'</span><span class="blk-ts">'+esc(t.stage||"No stage")+'</span><span class="blk-tl">'+(isOverdue(t)?lateDays(t)+"d late":esc(t.status))+'</span></a>').join("")+
+      (g.ts.length>4?'<button type="button" class="linkbtn" data-blk="'+g.c.id+'">'+(open?"Show less":"Show "+(g.ts.length-4)+" more")+'</button>':'')+'</div>';
   });
-  h+='</tbody></table></div></section>';
-  if(UI.selCell){
-    const [cid,st]=UI.selCell.split("|");const c=clientById(cid);const s=c?stageState(cid,st):null;
-    if(s)h+='<section class="panel" style="margin-top:16px"><div class="panel-h"><h2>'+esc(c.name)+' · <em>'+esc(st)+'</em></h2><button type="button" class="ghost" data-cell="'+esc(UI.selCell)+'">Close</button></div>'+(s.tasks.length?s.tasks.map(t=>taskRow(t,false)).join(""):'<div class="empty">No tasks tagged <b>'+esc(st)+'</b> for this client.</div>')+'</section>';
+  if(untagged.length){
+    h+='<div class="note untag">'+plural(untagged.length,"task")+' '+(untagged.length===1?"has":"have")+' no funnel stage. <button type="button" class="linkbtn" data-act="untagged">'+(UI.showUntagged?"Hide":"Fix in Notion")+'</button></div>';
+    if(UI.showUntagged)h+='<div class="untag-list">'+untagged.map(t=>{const c=clientOfTask(t);return '<a class="blk-t" href="'+nlink(t.id)+'" target="_blank" rel="noopener"><span class="blk-tn">'+esc(t.name||"Untitled task")+'</span><span class="blk-ts">'+esc(c?c.name:"")+'</span><span class="blk-tl muted">Set stage</span></a>'}).join("")+'</div>';
   }
-  const untagged=S.tasks.filter(t=>!t.stage);
-  h+='<p class="note" style="margin-top:12px">Pitch updates save to the project in Notion when you click away. '+(untagged.length?untagged.length+' task(s) on linked projects have no Funnel Stage and are left out of the grid.':'')+'</p>';
-  return h;
-}
-
-function addonOptions(sel){return '<option value="">Choose…</option>'+ADDONS.map(a=>'<option'+(a===sel?" selected":"")+'>'+esc(a)+'</option>').join("")+'<option'+(sel==="Other"?" selected":"")+'>Other</option>'}
-function viewUpsell(){
-  const rows=S.clients.map(c=>({c,u:upsellInfo(c)}));
-  rows.sort((a,b)=>(b.u.due-a.u.due)||(b.u.signals.length-a.u.signals.length)||String(a.c.name).localeCompare(String(b.c.name)));
-  let h='<div class="hero"><div><div class="eyebrow">Project Tracker + your checkpoints</div><h1>When to <em>upsell</em></h1></div></div>';
-  h+=errBanner(S.err.core);
-  h+='<div class="banner warn" style="margin-bottom:16px"><span>Draft rules until the strat check-in checkpoints are confirmed: day 60 to 90 of the 90-day phase, funnel blockers (6.x) and add-ons not yet bought. Set a checkpoint per client below.</span></div>';
-  if(!S.upsellOn&&!S.loading)h+='<div class="banner info" style="margin-bottom:16px"><span>Saving checkpoints is switched off until the Upsell Checkpoints database is set up in Notion. Signals below still work.</span></div>';
-  h+='<section class="panel"><div class="tbl-wrap"><table class="up-tbl"><colgroup><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"></colgroup><thead><tr><th>Client</th><th>90-day phase</th><th>Signals</th><th>Not bought yet</th><th>Checkpoint</th></tr></thead><tbody>';
-  rows.forEach(({c,u})=>{
-    const cp=u.cp||{};
-    const stLabel={planned:"Planned",pitched:"Pitched",won:"Won",declined:"Declined"}[cp.status]||"";
-    h+='<tr><td><b>'+esc(c.name)+'</b><div class="note">'+esc([c.stage,c.type].filter(Boolean).join(" · "))+'</div></td>'+
-      '<td>'+(u.day!=null?'Day '+u.day:'<span class="note">No start date</span>')+'</td>'+
-      '<td><div class="pills">'+(u.signals.length?u.signals.map(s=>'<span class="pill '+(s.kind==="blue"?"":s.kind)+'">'+esc(s.text)+'</span>').join(""):'<span class="note">None</span>')+'</div></td>'+
-      '<td><div class="pills">'+u.missing.map(a=>'<span class="pill muted">'+esc(a)+'</span>').join("")+'</div>'+(c.addons.length?'<div class="note" style="margin-top:4px">Has: '+esc(c.addons.join(", "))+'</div>':'')+'</td>'+
-      '<td>'+(cp.nextDate?'<div><span class="pill '+(u.due?"warn":"")+'">'+fmtDate(cp.nextDate)+'</span> '+esc(cp.offer||"")+' '+(stLabel?'<span class="pill muted">'+stLabel+'</span>':'')+'</div>'+(cp.note?'<div class="note">'+esc(cp.note)+'</div>':''):'<span class="note">Not set</span>')+
-      '<details class="edit"><summary>'+(cp.nextDate?"Edit checkpoint":"Set checkpoint")+'</summary><form class="form" data-upsell="'+c.id+'">'+
-      '<label class="f" for="ud-'+c.id+'">Date<input type="date" id="ud-'+c.id+'" name="nextDate" value="'+esc(cp.nextDate||"")+'" required></label>'+
-      '<label class="f" for="uo-'+c.id+'">Offer<select id="uo-'+c.id+'" name="offer">'+addonOptions(cp.offer)+'</select></label>'+
-      '<label class="f" for="us-'+c.id+'">Status<select id="us-'+c.id+'" name="status">'+["planned","pitched","won","declined"].map(s=>'<option value="'+s+'"'+(cp.status===s?" selected":"")+'>'+s[0].toUpperCase()+s.slice(1)+'</option>').join("")+'</select></label>'+
-      '<label class="f wide" for="un-'+c.id+'">Note<input id="un-'+c.id+'" name="note" value="'+esc(cp.note||"")+'" placeholder="From the strat check-in"></label>'+
-      '<button type="submit" class="primary"'+(S.upsellOn?"":" disabled")+'>Save</button>'+
-      (cp.nextDate?'<button type="button" class="ghost danger" data-clear="'+esc(c.id)+'"'+(S.upsellOn?"":" disabled")+'>Remove checkpoint</button>':'')+
-      '</form></details></td></tr>';
-  });
-  h+='</tbody></table></div></section>';
-  return h;
-}
-
-function curOptions(sel){return Object.keys(CUR).map(k=>'<option'+(k===sel?" selected":"")+'>'+k+'</option>').join("")}
-function viewAds(){
-  const running=runningClients();
-  const infos=running.map(c=>({c,a:adInfo(c.id)}));
-  const flagged=infos.filter(x=>x.a.status==="flagged").length;
-  const date=UI.adDate||addDays(TODAY,-1);
-  let h='<div class="hero"><div class="hero-row"><div><div class="eyebrow">'+new Date().toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"})+'</div><h1>Morning <em>ad</em> check</h1></div></div>'+
-    '<div class="stats s3"><div class="stat"><b>'+running.length+'</b><span>Clients running ads</span></div><div class="stat '+(flagged?"bad":"")+'"><b>'+flagged+'</b><span>Flagged</span></div><div class="stat '+(infos.filter(x=>!x.a.loggedYesterday).length?"warn":"")+'"><b>'+infos.filter(x=>!x.a.loggedYesterday).length+'</b><span>Not logged yesterday</span></div></div></div>';
-  if(!S.adsOn&&!S.loading)h+='<div class="banner info"><span>Ad logging is switched off until the Ad Log database is set up (AD_LOG_DS_ID).</span></div>';
-  if(!S.adClientsOn&&!S.loading)h+='<div class="banner info"><span>Ad settings are switched off until the Ad Clients database is set up (AD_CLIENTS_DS_ID).</span></div>';
-  // Log results
-  h+='<section class="panel"><form id="adlog"><div class="panel-h"><h2>Log <em>results</em> <span class="sub">from Ads Manager</span></h2><div class="toolbar" style="margin:0"><input type="date" id="adlog-date" value="'+date+'" max="'+TODAY+'" aria-label="Date"><button type="submit" class="primary"'+(S.adsOn&&running.length?"":" disabled")+'>Save</button></div></div>';
-  if(!running.length)h+='<div class="empty">No clients are running ads yet. Open <b>Ad settings</b> below and switch them on.</div>';
+  h+='</section><div class="stack">';
+  // Ads
+  const flagged=running.filter(x=>["over","check","notlogged"].includes(x.a.status)).sort((a,b)=>["over","check","notlogged"].indexOf(a.a.status)-["over","check","notlogged"].indexOf(b.a.status));
+  h+='<section class="panel"><div class="panel-h"><h2>Ads</h2><a href="#ads" data-tab-go="ads">Morning check</a></div>';
+  if(!running.length)h+='<div class="empty">No clients set to running ads yet.</div>';
   else{
-    h+='<div class="tbl-wrap"><table class="log-tbl"><colgroup><col class="l1"><col class="l2"><col class="l2"><col class="l3"><col class="l4"></colgroup><thead><tr><th>Client</th><th class="r">Spend</th><th class="r">Results</th><th class="r">Cost per result</th><th>What changed</th></tr></thead><tbody>';
-    running.forEach(c=>{
-      const a=adInfo(c.id),e=S.ads.find(x=>x.clientId===c.id&&x.date===date)||{};
-      const cpr=e.results>0?money(e.spend/e.results,a.cur):"–";
-      h+='<tr data-row="'+c.id+'"><td><b>'+esc(c.name)+'</b><div class="note">'+esc(a.label)+' · '+esc(a.cur)+(e.id?' · <span class="good-t">logged</span>':'')+'</div></td>'+
-        '<td><input type="number" min="0" step="0.01" inputmode="decimal" id="sp-'+c.id+'" value="'+(e.id?esc(e.spend):"")+'" aria-label="Spend for '+esc(c.name)+'"></td>'+
-        '<td><input type="number" min="0" step="1" inputmode="numeric" id="rs-'+c.id+'" value="'+(e.id?esc(e.results):"")+'" aria-label="Results for '+esc(c.name)+'"></td>'+
-        '<td class="r"><span id="cpr-'+c.id+'" class="cpr">'+cpr+'</span></td>'+
-        '<td><input id="nt-'+c.id+'" value="'+esc(e.note||"")+'" placeholder="e.g. new hook live, paused ad 2" aria-label="What changed for '+esc(c.name)+'"></td></tr>';
-    });
-    h+='</tbody></table></div><p class="note" style="margin:10px 0 0">Fill the rows you have numbers for. Saving the same client and date again updates that day.</p>';
+    h+=flagged.map(({c,a})=>'<div class="tint '+(a.status==="notlogged"?"warn":"bad")+'"><span>'+esc(c.name)+'</span><b>'+({over:"Over target",check:"Check",notlogged:"Not logged"})[a.status]+'</b></div>').join("");
+    const rest=running.length-flagged.length;
+    h+='<div class="note" style="margin-top:8px">'+(flagged.length?(rest?rest+" more on track":""):"All "+running.length+" on track")+'</div>';
   }
-  h+='</form></section>';
-  // Cards
-  if(running.length){
-    h+='<div class="cards" style="margin-top:var(--gap)">'+infos.map(({c,a})=>{
-      const trend=a.series.length>=2?spark(a.series,a.target):'<div class="note spark-empty">Log at least 2 days with '+esc(a.label.toLowerCase())+' to see the trend.</div>';
-      let wow='';
-      if(a.cpr7!=null&&a.cprP!=null){const ch=(a.cpr7-a.cprP)/a.cprP*100;wow='<span class="'+(ch>0?"up":"down")+'">'+(ch>0?"▲":"▼")+' '+Math.abs(ch).toFixed(0)+'%</span> vs last week';}
-      return '<div class="adcard"><div class="card-h"><b>'+esc(c.name)+'</b>'+STATUS_PILL[a.status]+'</div>'+
-        '<div class="kpis"><div><b>'+money(a.s7,a.cur)+'</b><span>Spend 7d</span></div><div><b>'+a.r7+'</b><span>'+esc(a.label)+' 7d</span></div><div><b>'+money(a.cpr7,a.cur)+'</b><span>'+esc(COST_LABEL[a.label])+'</span></div></div>'+
-        (a.target!=null?'<div class="note">Target '+money(a.target,a.cur)+(wow?' · '+wow:'')+'</div>':(wow?'<div class="note">'+wow+'</div>':''))+
-        trend+
-        (a.flags.length?'<div class="flags">'+a.flags.map(f=>'<span class="pill bad">'+esc(f)+'</span>').join("")+'</div>':'')+
-        (a.lastNote?'<div class="note">Last change ('+fmtDate(a.lastNote.date)+'): '+esc(a.lastNote.note)+'</div>':'')+'</div>';
-    }).join("")+'</div>';
-  }
-  // Recent entries
-  const recent=S.ads.slice().sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:0).slice(0,30);
-  if(recent.length){
-    h+='<section class="panel" style="margin-top:var(--gap)"><div class="panel-h"><h2>Recent <em>entries</em></h2></div><div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Client</th><th class="r">Spend</th><th class="r">Results</th><th class="r">Cost per result</th><th>What changed</th><th></th></tr></thead><tbody>'+
-      recent.map(a=>'<tr><td>'+fmtDate(a.date)+'</td><td>'+esc(a.clientName)+'</td><td class="r">'+money(a.spend,a.currency)+'</td><td class="r">'+esc(a.results)+' '+esc(a.resultLabel||"")+'</td><td class="r">'+(a.results>0?money(a.spend/a.results,a.currency):"–")+'</td><td>'+esc(a.note||"")+'</td><td class="r"><button type="button" class="ghost danger" data-del="'+esc(a.id)+'"'+(S.adsOn?"":" disabled")+'>Delete</button></td></tr>').join("")+'</tbody></table></div></section>';
-  }
-  // Settings
-  h+='<details class="panel settings" id="adset-panel"'+(running.length&&!UI.adSetOpen?"":" open")+'><summary><h2>Ad <em>settings</em> <span class="sub">who runs ads, result type, currency, target</span></h2></summary>'+
-    '<div class="tbl-wrap"><table class="set-tbl"><thead><tr><th>Client</th><th>Running ads</th><th>Result type</th><th>Currency</th><th>Target cost per result</th><th></th></tr></thead><tbody>'+
-    S.clients.slice().sort((x,y)=>(adSet(y.id)&&adSet(y.id).running?1:0)-(adSet(x.id)&&adSet(x.id).running?1:0)||x.name.localeCompare(y.name)).map(c=>{const s=adSet(c.id)||{};
-      return '<tr><td><b>'+esc(c.name)+'</b><div class="note">'+esc([c.stage,c.type].filter(Boolean).join(" · "))+'</div></td>'+
-      '<td><label class="switch"><input type="checkbox" form="as-'+c.id+'" name="running"'+(s.running?" checked":"")+'><span>'+(s.running?"On":"Off")+'</span></label></td>'+
-      '<td><select form="as-'+c.id+'" name="resultLabel">'+["Leads","Purchases","Bookings","Messages","Results"].map(r=>'<option'+(r===(s.resultLabel||"Leads")?" selected":"")+'>'+r+'</option>').join("")+'</select></td>'+
-      '<td><select form="as-'+c.id+'" name="currency">'+curOptions(s.currency||"AUD")+'</select></td>'+
-      '<td><input form="as-'+c.id+'" name="target" type="number" min="0" step="0.01" value="'+(s.target!=null?esc(s.target):"")+'" placeholder="Optional"></td>'+
-      '<td class="r"><form id="as-'+c.id+'" data-adset="'+c.id+'"><button type="submit" class="ghost"'+(S.adClientsOn?"":" disabled")+'>Save</button></form></td></tr>';}).join("")+
-    '</tbody></table></div></details>';
-  return h;
+  h+='</section>';
+  // Upsell windows
+  h+='<section class="panel"><div class="panel-h"><h2>Upsell windows</h2><a href="#upsell" data-tab-go="upsell">Open Upsell</a></div>'+
+    (windows.length?windows.map(({c,u})=>'<div class="uw"><div class="uw-h"><b>'+esc(c.name)+'</b><span class="note">'+(u.callBooked?"Call "+fmtDate(u.cp.nextDate):u.day!=null?"Day "+u.day:"")+'</span></div><div class="note">'+esc([u.route,u.offer?"offer "+u.offer:""].filter(Boolean).join(": ")||u.reason||"Window open, no route yet")+'</div></div>').join(""):'<div class="empty">No upsell windows open right now.</div>')+
+    '</section></div></div>';
+  return h+footer();
 }
 
-function strategyDecks(c){
-  const out=[],seen=new Set();
-  const add=(label,url,status)=>{if(!url||seen.has(url))return;seen.add(url);out.push({label,url,status})};
-  if(c.deck)add("Strategy deck",c.deck,null);
-  boardFor(c).forEach(b=>{
-    if(["Style Guide","Ideation"].includes(b.type))return;
-    if(/style guide|ideation/i.test(b.title||""))return;
-    add(b.title||b.type||"Strategy deck",b.deck,b.status);
+/* ---------- Funnels ---------- */
+function viewFunnels(){
+  const fc=funnelClients().map(c=>({c,stuck:tasksFor(c.id).filter(isStuck).length})).sort((a,b)=>b.stuck-a.stuck||a.c.name.localeCompare(b.c.name));
+  const legend='<div class="legend"><span><i style="background:var(--good)"></i>Done</span><span><i style="background:var(--blue)"></i>In progress</span><span><i style="background:var(--bad)"></i>Stuck</span><span><i style="background:var(--none)"></i>No tasks tagged</span></div>';
+  let h=hero("Funnel clients · PM Engine","Funnel progress",legend);
+  h+=errBanner();
+  if(!fc.length)return h+emptyClients()+footer();
+  fc.forEach(({c})=>{
+    const all=tasksFor(c.id),tagged=all.filter(t=>t.stage),untagged=all.filter(t=>!t.stage&&isOpen(t)),ps=projectsFor(c.id);
+    const nt=nextTask(c.id);
+    h+='<section class="frow"><div class="frow-n"><div class="blk-n">'+esc(c.name)+'</div><div class="note">'+esc(subLine(c))+'</div>'+(untagged.length&&tagged.length?'<div class="note muted-s">'+plural(untagged.length,"task")+' not tagged</div>':'')+'</div>';
+    if(!tagged.length){
+      h+='<div class="frow-bars notag"><div class="bar none"></div><div class="note">No tasks tagged'+(all.length?' · '+plural(all.length,"task")+(all.length===1?' needs':' need')+' a Funnel Stage':'')+'</div></div>';
+    }else{
+      h+='<div class="frow-bars">'+STAGES.map(st=>{const s=stageState(c.id,st),key=c.id+"|"+st;
+        return '<button type="button" class="stg '+s.state+(UI.selCell===key?" sel":"")+'" data-cell="'+esc(key)+'"><span class="bar"></span><span class="stg-l">'+esc(STAGE_SHORT[st]||st)+'</span><span class="stg-c">'+(s.tasks.length?s.done+"/"+s.tasks.length:"—")+'</span></button>'}).join("")+'</div>';
+    }
+    h+='<div class="frow-r"><div class="next">Next: '+(nt?'<a href="'+nlink(nt.id)+'" target="_blank" rel="noopener">'+esc(nt.name||"Untitled task")+'</a>'+(isOverdue(nt)?' <span class="up">('+lateDays(nt)+'d late)</span>':''):'<span class="note">No open tasks</span>')+'</div>'+
+      ps.map(p=>'<label class="f" for="pitch-'+p.id+'">Pitch update'+(ps.length>1?' · '+esc(p.name):'')+'<textarea class="pitch-in" rows="1" id="pitch-'+p.id+'" data-pitch="'+p.id+'" placeholder="What are we pitching?">'+esc(p.pitch||"")+'</textarea></label>').join("")+'</div>';
+    if(UI.selCell&&UI.selCell.startsWith(c.id+"|")){
+      const st=UI.selCell.split("|")[1],s=stageState(c.id,st);
+      h+='<div class="frow-detail"><div class="panel-h"><h2>'+esc(st)+' <span class="sub">'+plural(s.tasks.length,"task")+'</span></h2><button type="button" class="ghost" data-cell="'+esc(UI.selCell)+'">Close</button></div>'+
+        (s.tasks.length?s.tasks.map(t=>'<a class="blk-t" href="'+nlink(t.id)+'" target="_blank" rel="noopener"><span class="blk-tn">'+esc(t.name||"Untitled task")+'</span><span class="blk-ts">'+esc(t.status)+'</span><span class="blk-tl'+(isOverdue(t)?'':' muted')+'">'+(isOverdue(t)?lateDays(t)+"d late":t.due?"Due "+fmtDate(t.due):"")+'</span></a>').join(""):'<div class="empty">No tasks tagged <b>'+esc(st)+'</b> yet.</div>')+'</div>';
+    }
+    h+='</section>';
   });
+  h+='<p class="note" style="margin-top:12px">Paused and done projects are hidden. Pitch updates save to the project in Notion when you click away.</p>';
+  return h+footer();
+}
+
+/* ---------- Upsell ---------- */
+function upRow(c,u){
+  const cp=u.cp||{};
+  const ph=phaseLabel(phaseOf(c));
+  const pct=u.day!=null?Math.min(100,Math.max(2,u.day/90*100)):0;
+  const barCls=u.day==null?"none":u.day>90?"bad":u.day>=60?"warn":"blue";
+  let right;
+  if(u.closed)right='<span class="note">'+(cp.status==="won"?"Won":"Declined")+(cp.nextDate?" · "+fmtDate(cp.nextDate):"")+'</span>'+(cp.proposal?'<a class="btn primary" href="'+esc(cp.proposal)+'" target="_blank" rel="noopener">Open proposal</a>':'');
+  else if(u.callBooked)right='<span class="note">Call '+fmtDay(cp.nextDate)+'</span>'+(cp.proposal?'<a class="btn primary" href="'+esc(cp.proposal)+'" target="_blank" rel="noopener">Open proposal</a>':'<button type="button" class="primary" data-edit-up="'+c.id+'">Add proposal</button>');
+  else right='<span class="note">No call booked</span>'+(S.bookingUrl?'<a class="btn primary" href="'+esc(S.bookingUrl)+'" target="_blank" rel="noopener">Book call</a>':'<button type="button" class="primary" disabled title="Add BOOKING_URL in Vercel to switch this on">Book call</button>');
+  let h='<div class="urow"><div><div class="blk-n">'+esc(c.name)+'</div><div class="note">'+esc([ph,c.po?"PO "+c.po:null].filter(Boolean).join(" · ")||"—")+'</div></div>'+
+    '<div class="uday"><div class="note">'+(u.day==null?"No start date":u.day>90?"Day "+u.day+" · past 90":"Day "+u.day+" of 90")+'</div><div class="dbar"><i class="'+barCls+'" style="width:'+pct+'%"></i></div>'+(u.day!=null&&u.day>=30&&u.day<=37&&!u.closed?'<div class="note warn-t">Day 30: GHL reminder</div>':'')+'</div>'+
+    '<div class="uoffer">'+(u.route?'<span class="pill '+ROUTE_CLS[u.route]+'">'+esc(u.route)+'</span>':'<span class="pill muted">No route yet</span>')+
+      '<div class="uoffer-t">'+esc(u.offer||"Pick a route and offer")+'</div>'+(u.reason?'<div class="note">'+esc(u.reason)+'</div>':'')+'</div>'+
+    '<div class="uright">'+right+'<button type="button" class="linkbtn" data-edit-up="'+c.id+'">'+(UI.editUp[c.id]?"Close":"Edit")+'</button></div></div>';
+  if(UI.editUp[c.id]){
+    h+='<form class="form up-form" data-upsell="'+c.id+'">'+
+      '<label class="f">Route<select name="route"><option value="">Choose…</option>'+ROUTES.map(r=>'<option'+(r===u.route?" selected":"")+'>'+r+'</option>').join("")+'</select></label>'+
+      '<label class="f wide">Suggested offer<input name="offer" value="'+esc(u.offer)+'" placeholder="e.g. Ads management + CRM bundle"></label>'+
+      '<label class="f">Call date<input type="date" name="nextDate" value="'+esc(cp.nextDate||"")+'"></label>'+
+      '<label class="f">Status<select name="status">'+["planned","pitched","won","declined"].map(s=>'<option value="'+s+'"'+((cp.status||"planned")===s?" selected":"")+'>'+s[0].toUpperCase()+s.slice(1)+'</option>').join("")+'</select></label>'+
+      '<label class="f wide">Proposal link<input name="proposal" type="url" value="'+esc(cp.proposal||"")+'" placeholder="https://"></label>'+
+      '<label class="f wide">Note<input name="note" value="'+esc(cp.note||"")+'" placeholder="From the strat check-in"></label>'+
+      '<div class="form-btns"><button type="submit" class="primary"'+(S.upsellOn?"":" disabled")+'>Save</button>'+(u.cp?'<button type="button" class="ghost danger" data-clear="'+c.id+'"'+(S.upsellOn?"":" disabled")+'>Remove checkpoint</button>':'')+'</div></form>';
+  }
+  return h;
+}
+function viewUpsell(){
+  const rows=funnelClients().map(c=>({c,u:upsellInfo(c)}));
+  const act=rows.filter(x=>x.u.act).sort((a,b)=>(b.u.callBooked-a.u.callBooked)||(b.u.day||0)-(a.u.day||0));
+  const coming=rows.filter(x=>x.u.coming).sort((a,b)=>(b.u.day||0)-(a.u.day||0));
+  const closed=rows.filter(x=>x.u.closed).sort((a,b)=>(a.u.cp.nextDate||"")<(b.u.cp.nextDate||"")?1:-1);
+  const later=rows.filter(x=>!x.u.act&&!x.u.coming&&!x.u.closed);
+  const closedWeek=closed.filter(x=>x.u.closedThisWeek).length;
+  let h=hero("Funnel clients · $1,000 min bundle","When to upsell",'<div class="pills-row">'+bpill("blue",act.length+" act now")+bpill("plain",coming.length+" coming up")+bpill("good",closedWeek+" closed this week")+'</div>');
+  h+=errBanner();
+  if(!S.upsellOn&&!S.loading)h+='<div class="banner info"><span>Saving is switched off until UPSELL_DS_ID is set.</span></div>';
+  if(!rows.length)return h+emptyClients()+footer();
+  const sec=(title,list)=>list.length?'<div class="sec-h">'+title+'</div><div class="ulist">'+list.map(x=>'<section class="ucard">'+upRow(x.c,x.u)+'</section>').join("")+'</div>':'';
+  h+=sec("Act now",act)+sec("Coming up",coming)+sec("Closed",closed);
+  if(later.length)h+='<details class="later"><summary class="sec-h">Not yet · '+later.length+'</summary><div class="ulist">'+later.map(x=>'<section class="ucard">'+upRow(x.c,x.u)+'</section>').join("")+'</div></details>';
+  h+='<p class="note" style="margin-top:14px">Routes: <b>Win</b> (hit the goal), <b>Client ask</b>, <b>Gap</b> (blocker or missing add-on). Bundles start at $1,000. Route and offer are suggested from the blocker and phase results. Edit to change them.</p>';
+  return h+footer();
+}
+
+/* ---------- Ads ---------- */
+function setForm(c){
+  const s=adSet(c.id)||{};
+  return '<form class="form set-form" data-adset="'+c.id+'">'+
+    '<label class="switch"><input type="checkbox" name="running"'+(s.running?" checked":"")+'><span>Running ads</span></label>'+
+    '<label class="f">Result type<select name="resultLabel">'+RESULT_TYPES.map(r=>'<option'+(r===(s.resultLabel||"Leads")?" selected":"")+'>'+r+'</option>').join("")+'</select></label>'+
+    '<label class="f">Currency<select name="currency">'+Object.keys(CUR).map(k=>'<option'+(k===(s.currency||"AUD")?" selected":"")+'>'+k+'</option>').join("")+'</select></label>'+
+    '<label class="f">Target cost / result<input name="target" type="number" min="0" step="0.01" value="'+(s.target!=null?esc(s.target):"")+'" placeholder="Optional"></label>'+
+    '<div class="form-btns"><button type="submit" class="primary"'+(S.adClientsOn?"":" disabled")+'>Save settings</button></div></form>';
+}
+function viewAds(){
+  const running=runningClients().map(c=>({c,a:adInfo(c.id)}));
+  const cnt=k=>running.filter(x=>x.a.status===k).length;
+  const date=UI.adDate||YESTERDAY;
+  const pills=bpill("plain",running.length+" running")+(cnt("over")+cnt("check")?bpill("bad",(cnt("over")+cnt("check"))+" over target"):"")+(cnt("notlogged")?bpill("warn",cnt("notlogged")+" not logged"):"")+bpill("good",(cnt("ok")+cnt("nodata"))+" on track");
+  let h=hero(esc(dateLine())+' · Logging <label class="logdate">'+esc(new Date(date+"T00:00:00").toLocaleDateString("en-GB",{weekday:"long",day:"numeric"}))+'<input type="date" id="adlog-date" value="'+date+'" max="'+TODAY+'" aria-label="Change the day you are logging"></label>',"Morning ad check",'<div class="pills-row">'+pills+'</div>');
+  h+=errBanner();
+  if(!S.adsOn&&!S.loading)h+='<div class="banner info"><span>Ad logging is switched off until AD_LOG_DS_ID is set.</span></div>';
+  if(!running.length&&!S.loading)h+='<section class="panel"><div class="empty">No funnel clients are running ads yet. Use <b>Set up</b> below to switch one on.</div></section>';
+  const order={over:0,check:1,notlogged:2,nodata:3,ok:4};
+  h+='<div class="adgrid">'+running.sort((x,y)=>order[x.a.status]-order[y.a.status]||x.c.name.localeCompare(y.c.name)).map(({c,a})=>{
+    const e=a.logs.find(l=>l.date===date)||{};
+    const lastTxt=!a.last?"Never logged":a.last===TODAY?"Last logged today":a.last===YESTERDAY?"Last logged yesterday":"Last logged "+fmtDay(a.last);
+    return '<section class="adcard"><div class="card-h"><div><div class="blk-n">'+esc(c.name)+'</div><div class="note">'+esc([projectsFor(c.id).map(p=>p.name).join(", "),a.label,a.cur].filter(Boolean).join(" · "))+'</div></div>'+AD_PILL[a.status]+'</div>'+
+      '<div class="kpis"><div><span>Spend 7d</span><b>'+money(a.s7,a.cur)+'</b></div><div><span>'+esc(a.label)+' 7d</span><b>'+a.r7+'</b></div><div><span>'+esc(COST_LABEL[a.label])+'</span><b class="'+(a.over?"up":"")+'">'+money(a.cpr7,a.cur)+'</b>'+(a.target!=null?'<em>target '+money(a.target,a.cur)+'</em>':'')+'</div><div class="kspark">'+spark(a.series,a.target,a.over)+'</div></div>'+
+      '<div class="note-box">'+esc(a.note)+'</div>'+
+      '<form class="logform" data-log="'+c.id+'">'+
+        '<label class="f">Spend '+(date===YESTERDAY?"yesterday":fmtDate(date))+'<input type="number" min="0" step="0.01" inputmode="decimal" id="sp-'+c.id+'" value="'+(e.id?esc(e.spend):"")+'" placeholder="'+esc(a.cur)+'"></label>'+
+        '<label class="f">'+esc(a.label)+' '+(date===YESTERDAY?"yesterday":fmtDate(date))+'<input type="number" min="0" step="1" inputmode="numeric" id="rs-'+c.id+'" value="'+(e.id?esc(e.results):"")+'" placeholder="0"></label>'+
+        '<label class="f wide">What changed<span class="lf-row"><input id="nt-'+c.id+'" value="'+esc(e.note||"")+'" placeholder="New creative, budget up…"><button type="submit" class="primary"'+(S.adsOn?"":" disabled")+'>'+(e.id?"Update":"Log")+'</button></span></label>'+
+      '</form>'+
+      '<div class="card-f"><span class="note">'+lastTxt+'</span><button type="button" class="linkbtn" data-manage="'+c.id+'">'+(UI.manage[c.id]?"Close":"Manage")+'</button></div>'+
+      (UI.manage[c.id]?setForm(c):'')+'</section>';
+  }).join("")+'</div>';
+  // Funnel clients not running ads
+  const off=funnelClients().filter(c=>!(adSet(c.id)&&adSet(c.id).running));
+  if(off.length)h+='<details class="panel later-p"'+(UI.offOpen?" open":"")+' id="off-panel"><summary><h2>Not running ads <span class="sub">'+off.length+'</span></h2></summary>'+off.map(c=>'<div class="off-row"><div><b>'+esc(c.name)+'</b><div class="note">'+esc(subLine(c))+'</div></div><button type="button" class="ghost" data-manage="'+c.id+'">'+(UI.manage[c.id]?"Close":"Set up")+'</button></div>'+(UI.manage[c.id]?setForm(c):'')).join("")+'</details>';
+  // Recent entries (for fixing mistakes)
+  const ids=new Set(funnelClients().map(c=>c.id));
+  const recent=S.ads.filter(a=>ids.has(a.clientId)).sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:0).slice(0,30);
+  if(recent.length)h+='<details class="panel later-p" id="recent-panel"'+(UI.recentOpen?" open":"")+'><summary><h2>Recent entries <span class="sub">'+recent.length+'</span></h2></summary><div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Client</th><th class="r">Spend</th><th class="r">Results</th><th class="r">Cost / result</th><th>What changed</th><th></th></tr></thead><tbody>'+
+    recent.map(a=>'<tr><td>'+fmtDate(a.date)+'</td><td>'+esc(a.clientName)+'</td><td class="r">'+money(a.spend,a.currency)+'</td><td class="r">'+esc(a.results)+'</td><td class="r">'+(a.results>0?money(a.spend/a.results,a.currency):"–")+'</td><td>'+esc(a.note||"")+'</td><td class="r"><button type="button" class="ghost danger" data-del="'+esc(a.id)+'"'+(S.adsOn?"":" disabled")+'>Delete</button></td></tr>').join("")+'</tbody></table></div></details>';
+  return h+footer();
+}
+
+/* ---------- Briefs ---------- */
+function goalText(a){
+  if(!a||a.goal==null)return null;
+  const m=String(a.metric||"").replace(/^accumulated\s+/i,"").trim().toLowerCase();
+  return compact(a.goal)+(m?" "+m:"")+" in 90 days";
+}
+function decksFor(c){
+  const out=[],seen=new Set();
+  archiveFor(c.id).forEach(a=>{if(a.deck&&!seen.has(a.deck)){seen.add(a.deck);out.push({label:(phaseNum(a.stage)?"Phase "+phaseNum(a.stage):a.stage||"Phase")+" strategy deck",url:a.deck})}});
+  if(c.deck&&!seen.has(c.deck)){const n=phaseOf(c);const has=out.some(d=>n&&d.label.startsWith("Phase "+n+" "));out.push({label:n&&!has?"Phase "+n+" strategy deck":"Current strategy deck",url:c.deck})}
   return out;
 }
 function viewBriefs(){
   const q=UI.briefQ.trim().toLowerCase();
-  const list=S.clients.filter(c=>!q||String(c.name).toLowerCase().includes(q));
-  let h='<div class="hero"><div class="hero-row"><div><div class="eyebrow">Project Tracker + Strategy Board</div><h1>Strategy <em>decks</em></h1></div>'+
-    '<label class="f" for="brief-q" style="min-width:220px">Find a client<input id="brief-q" type="search" value="'+esc(UI.briefQ)+'" placeholder="Type a name"></label></div></div>';
-  h+=errBanner(S.err.core);
-  if(!list.length){h+='<section class="panel"><div class="empty">'+(S.loading?"Loading…":"No client matches that name.")+'</div></section>';return h}
-  const withDecks=list.map(c=>({c,d:strategyDecks(c),goal:boardFor(c).map(b=>b.goal).find(Boolean)})).sort((x,y)=>(y.d.length>0)-(x.d.length>0)||x.c.name.localeCompare(y.c.name));
-  h+='<div class="cards">'+withDecks.map(({c,d,goal})=>
-    '<div class="adcard"><div class="card-h"><b>'+esc(c.name)+'</b><span class="pill muted">'+esc(c.stage||"No stage")+'</span></div>'+
-    '<div class="note">'+esc([c.po&&("PO "+c.po),c.strat&&("Strat "+c.strat)].filter(Boolean).join(" · "))+'</div>'+
-    (goal?'<div><span class="note">Goal</span><div><b>'+esc(goal)+'</b></div></div>':'')+
-    (d.length?'<div class="deck-list">'+d.map(x=>'<a class="deck" href="'+esc(x.url)+'" target="_blank" rel="noopener"><span class="deck-ic" aria-hidden="true"></span><span class="deck-t">'+esc(x.label)+'</span>'+(x.status?'<span class="pill '+(x.status==="Approved"?"good":"muted")+'">'+esc(x.status)+'</span>':'')+'</a>').join("")+'</div>':'<div class="note">No strategy deck yet.</div>')+
-    '</div>').join("")+'</div>';
-  h+='<p class="note" style="margin-top:12px">Shows strategy decks only: the deck on the Project Tracker plus strategy decks on the Strategy Board. Style guides and ideation are left out. Board items are matched by client name.</p>';
-  return h;
+  const all=funnelClients();
+  const list=all.filter(c=>!q||String(c.name).toLowerCase().includes(q));
+  let h=hero("Funnel clients · Phase archive","Briefs",'<label class="f" for="brief-q" style="min-width:240px">Find a client<input id="brief-q" type="search" value="'+esc(UI.briefQ)+'" placeholder="Type a name"></label>');
+  h+=errBanner();
+  if(S.archiveError&&!S.loading)h+='<div class="banner info"><span>'+esc(S.archiveError)+' Until then only the current deck from the Project Tracker shows.</span></div>';
+  if(!all.length)return h+emptyClients()+footer();
+  if(!list.length)return h+'<section class="panel"><div class="empty">No client matches that name.</div></section>'+footer();
+  h+='<div class="bgrid">'+list.map(c=>{
+    const arc=archiveFor(c.id),goal=goalText(arc[arc.length-1]),d=decksFor(c),ph=phaseLabel(phaseOf(c));
+    return '<section class="adcard bcard"><div class="card-h"><div><div class="blk-n">'+esc(c.name)+'</div><div class="note">'+esc([c.po&&("PO "+c.po),c.strat&&("Strat "+c.strat)].filter(Boolean).join(" · "))+'</div></div>'+(ph?'<span class="pill">'+ph+'</span>':'')+'</div>'+
+      '<div class="goal-box"><span>90-day goal</span><b>'+esc(goal||"Not in the archive yet")+'</b></div>'+
+      (d.length?'<div class="deck-list">'+d.map(x=>'<a class="deck" href="'+esc(x.url)+'" target="_blank" rel="noopener"><span class="deck-t">'+esc(x.label)+'</span><span class="deck-o">Open</span></a>').join("")+'</div>':'<div class="note">No strategy deck yet.</div>')+'</section>';
+  }).join("")+'</div>';
+  return h+footer();
 }
 
 /* ---------- motion, tab pill, theme ---------- */
 function movePill(){const b=document.querySelector('#tabs button[aria-current="page"]'),p=$("#tab-pill");if(!b||!p)return;p.style.width=b.offsetWidth+"px";p.style.transform="translateX("+b.offsetLeft+"px)"}
-function stagger(root){let n=0;root.querySelectorAll(".stat,.panel,.adcard,.row,tbody tr").forEach(el=>{el.style.setProperty("--i",Math.min(n++,14))})}
-function countUp(root){
-  if(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)return;
-  root.querySelectorAll(".stat b").forEach(el=>{const end=+el.textContent;if(!(end>0))return;const t0=performance.now(),d=700;
-    const step=t=>{const k=Math.min(1,(t-t0)/d),e=1-Math.pow(1-k,3);el.textContent=Math.round(end*e);if(k<1)requestAnimationFrame(step)};el.textContent="0";requestAnimationFrame(step)});
-}
+function stagger(root){let n=0;root.querySelectorAll(".panel,.adcard,.frow,.ucard,.blk,.bpill").forEach(el=>{el.style.setProperty("--i",Math.min(n++,14))})}
 const ICON_SUN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
 const ICON_MOON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
 function paintThemeBtn(){const light=document.documentElement.getAttribute("data-theme")==="light";const b=$("#theme-btn");if(b)b.innerHTML=(light?ICON_MOON+"Dark":ICON_SUN+"Light")}
@@ -659,7 +827,7 @@ function toggleTheme(){const r=document.documentElement;const light=r.getAttribu
 function viewLogin(){
   return '<section class="login"><div class="login-card">'+
     '<span class="mark big" aria-hidden="true"></span>'+
-    '<div class="eyebrow">Editoz Club</div><h1>Marketing <em>Ops</em></h1>'+
+    '<div class="eyebrow">Editoz Club</div><h1>Marketing Ops</h1>'+
     '<p class="note">Sign in with your Editoz email and the team password.</p>'+
     '<form id="loginform" class="login-form" novalidate>'+
     '<label class="f" for="login-email">Work email<input id="login-email" name="email" type="email" autocomplete="username" placeholder="you@editozclub.com" required></label>'+
@@ -675,49 +843,54 @@ function render(){
   const app=$("#app");
   const views={today:viewToday,funnels:viewFunnels,upsell:viewUpsell,ads:viewAds,briefs:viewBriefs};
   const active=document.activeElement&&document.activeElement.id;
-  const openDetails=[...document.querySelectorAll("details.edit[open] form")].map(f=>f.dataset.upsell);
-  const kept={};if(!UI.resetLog)app.querySelectorAll("#adlog input[id]:not(#adlog-date),.pitch-in").forEach(el=>{if(el===document.activeElement||el.dataset.dirty)kept[el.id]=el.value});UI.resetLog=false;
-  const setOpen=$("#adset-panel");if(setOpen)UI.adSetOpen=setOpen.open;
+  // keep anything the user is typing across re-renders
+  const kept={};if(!UI.resetLog)app.querySelectorAll(".logform input[id],.pitch-in").forEach(el=>{if(el===document.activeElement||el.dataset.dirty)kept[el.id]=el.value});UI.resetLog=false;
+  ["off-panel","recent-panel"].forEach(id=>{const el=document.getElementById(id);if(el)UI[id==="off-panel"?"offOpen":"recentOpen"]=el.open});
+  const laterOpen=$("details.later");if(laterOpen)UI.laterOpen=laterOpen.open;
   const anim=UI.anim;UI.anim=false;
   app.innerHTML='<div class="view'+(anim?' enter':'')+'">'+(views[UI.tab]||viewToday)()+'</div>';
-  if(anim){stagger(app);countUp(app)}
+  if(anim)stagger(app);
+  const lo=$("details.later");if(lo&&UI.laterOpen)lo.open=true;
   requestAnimationFrame(movePill);
   Object.keys(kept).forEach(id=>{const el=document.getElementById(id);if(el){el.value=kept[id];el.dataset.dirty="1"}});
-  openDetails.forEach(id=>{const f=document.querySelector('form[data-upsell="'+id+'"]');if(f)f.closest("details").open=true});
   if(active){const el=document.getElementById(active);if(el&&el.id==="brief-q"){el.focus();el.setSelectionRange(el.value.length,el.value.length)}}
+  document.querySelectorAll(".pitch-in").forEach(autoGrow);
 }
+function autoGrow(t){t.style.height="auto";t.style.height=Math.max(38,t.scrollHeight+2)+"px"}
 
 /* ---------- events ---------- */
 document.addEventListener("click",async e=>{
   const tb=e.target.closest("#tabs button");if(tb){setTab(tb.dataset.tab);return}
-  const go=e.target.closest("[data-tab-go]");if(go){setTab(go.dataset.tabGo);return}
+  const go=e.target.closest("[data-tab-go]");if(go){e.preventDefault();setTab(go.dataset.tabGo);return}
   if(e.target.closest('[data-act="reload"]')){UI.animOnLoad=true;loadAll(true);return}
+  if(e.target.closest('[data-act="untagged"]')){UI.showUntagged=!UI.showUntagged;render();return}
   if(e.target.closest("#theme-btn")){toggleTheme();return}
-  if(e.target.closest("#signout")){try{await api("/api/login",{method:"POST",body:{logout:true}})}catch(x){}S.locked=true;S.user=null;S.clients=[];S.projects=[];S.tasks=[];S.board=[];S.ads=[];S.upsell={};render();return}
+  if(e.target.closest("#signout")){try{await api("/api/login",{method:"POST",body:{logout:true}})}catch(x){}S.locked=true;S.user=null;S.clients=[];S.projects=[];S.tasks=[];S.ads=[];S.upsell={};render();return}
+  const blk=e.target.closest("[data-blk]");if(blk){UI.blkOpen[blk.dataset.blk]=!UI.blkOpen[blk.dataset.blk];render();return}
+  const man=e.target.closest("[data-manage]");if(man){UI.manage[man.dataset.manage]=!UI.manage[man.dataset.manage];if(man.closest("#off-panel"))UI.offOpen=true;render();return}
+  const eu=e.target.closest("[data-edit-up]");if(eu){UI.editUp[eu.dataset.editUp]=!UI.editUp[eu.dataset.editUp];render();return}
   const cell=e.target.closest("[data-cell]");if(cell){UI.selCell=UI.selCell===cell.dataset.cell?null:cell.dataset.cell;render();return}
   const clr=e.target.closest("[data-clear]");
   if(clr&&S.upsellOn){
     clr.disabled=true;clr.textContent="Removing…";
-    try{await api("/api/upsell?clientId="+encodeURIComponent(clr.dataset.clear),{method:"DELETE"});toast("Checkpoint removed");loadAll(true)}catch(x){toast("Couldn't remove: "+x.message);clr.disabled=false}
+    try{await api("/api/upsell?clientId="+encodeURIComponent(clr.dataset.clear),{method:"DELETE"});toast("Checkpoint removed");UI.editUp[clr.dataset.clear]=false;loadAll(true)}catch(x){toast("Couldn't remove: "+x.message);clr.disabled=false}
     return;
   }
   const del=e.target.closest("[data-del]");
   if(del&&S.adsOn){
-    del.disabled=true;del.textContent="Deleting…";
+    del.disabled=true;del.textContent="Deleting…";UI.recentOpen=true;
     try{await api("/api/ads?id="+encodeURIComponent(del.dataset.del),{method:"DELETE"});toast("Entry deleted");loadAll(true)}catch(x){toast("Couldn't delete: "+x.message);del.disabled=false;del.textContent="Delete"}
   }
 });
 document.addEventListener("input",e=>{
   const t=e.target;
   if(t.id==="brief-q"){UI.briefQ=t.value;render();return}
-  if(t.classList.contains("pitch-in")){t.dataset.dirty="1";return}
-  const m=/^(sp|rs|nt)-([0-9a-f]{32})$/.exec(t.id||"");
-  if(m){t.dataset.dirty="1";if(m[1]!=="nt"){const sp=+($("#sp-"+m[2]).value||0),rs=+($("#rs-"+m[2]).value||0),a=adInfo(m[2]);$("#cpr-"+m[2]).textContent=rs>0?money(sp/rs,a.cur):"–"}}
+  if(t.classList.contains("pitch-in")){t.dataset.dirty="1";autoGrow(t);return}
+  if(/^(sp|rs|nt)-[0-9a-f]{32}$/.test(t.id||""))t.dataset.dirty="1";
 });
 document.addEventListener("change",async e=>{
   const t=e.target;
-  if(t.id==="adlog-date"){UI.adDate=t.value||addDays(TODAY,-1);UI.resetLog=true;render();return}
-  if(t.name==="running"&&t.type==="checkbox"){const l=t.parentElement.querySelector("span");if(l)l.textContent=t.checked?"On":"Off";return}
+  if(t.id==="adlog-date"){UI.adDate=t.value||YESTERDAY;UI.resetLog=true;render();return}
   if(t.classList.contains("pitch-in")){
     const id=t.dataset.pitch,text=t.value.trim(),p=S.projects.find(x=>x.id===id);
     if(p&&(p.pitch||"")===text){delete t.dataset.dirty;return}
@@ -741,36 +914,36 @@ document.addEventListener("submit",async e=>{
     return;
   }
   const btn=f.querySelector('button[type="submit"]');
-  if(f.id==="adlog"){
+  const label=btn?btn.textContent:"";
+  if(f.dataset.log){
     if(!S.adsOn){toast("Ad logging is switched off");return}
-    const date=$("#adlog-date").value;
-    const entries=runningClients().map(c=>{const sp=$("#sp-"+c.id).value,rs=$("#rs-"+c.id).value,nt=$("#nt-"+c.id).value.trim();
-      if(sp===""&&rs==="")return null;const a=adInfo(c.id);
-      return{clientId:c.id,clientName:c.name,date,spend:+sp||0,results:+rs||0,resultLabel:a.label,currency:a.cur,note:nt}}).filter(Boolean);
-    if(!entries.length){toast("Fill spend or results for at least one client");return}
+    const id=f.dataset.log,c=clientById(id),a=adInfo(id);
+    const sp=$("#sp-"+id).value,rs=$("#rs-"+id).value,nt=$("#nt-"+id).value.trim();
+    if(sp===""&&rs===""){toast("Add spend or "+a.label.toLowerCase()+" first");return}
     btn.disabled=true;btn.textContent="Saving…";
-    try{const r=await api("/api/ads",{method:"POST",body:{entries}});toast("Saved "+entries.length+(entries.length===1?" client":" clients")+(r.updated?" ("+r.updated+" updated)":""));UI.resetLog=true;await loadAll(true)}
-    catch(x){toast("Couldn't save: "+x.message)}
-    btn.disabled=false;btn.textContent="Save";return;
+    try{
+      await api("/api/ads",{method:"POST",body:{entries:[{clientId:id,clientName:c?c.name:"",date:UI.adDate||YESTERDAY,spend:+sp||0,results:+rs||0,resultLabel:a.label,currency:a.cur,note:nt}]}});
+      toast((c?c.name:"Client")+" logged");["sp-","rs-","nt-"].forEach(p=>{const el=$("#"+p+id);if(el)delete el.dataset.dirty});UI.resetLog=true;await loadAll(true);
+    }catch(x){toast("Couldn't save: "+x.message);btn.disabled=false;btn.textContent=label}
+    return;
   }
   if(f.dataset.adset){
     if(!S.adClientsOn){toast("Ad settings are switched off");return}
-    const id=f.dataset.adset,c=clientById(id),get=n=>document.querySelector('[form="as-'+id+'"][name="'+n+'"]');
-    const body={clientId:id,clientName:c?c.name:"",running:get("running").checked,resultLabel:get("resultLabel").value,currency:get("currency").value,target:get("target").value};
+    const id=f.dataset.adset,c=clientById(id);
+    const body={clientId:id,clientName:c?c.name:"",running:f.running.checked,resultLabel:f.resultLabel.value,currency:f.currency.value,target:f.target.value};
     btn.disabled=true;btn.textContent="Saving…";
-    try{await api("/api/adclients",{method:"POST",body});toast((c?c.name:"Client")+(body.running?" is running ads":" saved"));UI.adSetOpen=true;await loadAll(true)}
-    catch(x){toast("Couldn't save: "+x.message)}
-    btn.disabled=false;btn.textContent="Save";return;
+    try{await api("/api/adclients",{method:"POST",body});toast((c?c.name:"Client")+(body.running?" is running ads":" saved"));UI.manage[id]=false;await loadAll(true)}
+    catch(x){toast("Couldn't save: "+x.message);btn.disabled=false;btn.textContent=label}
+    return;
   }
   if(f.dataset.upsell){
     if(!S.upsellOn){toast("Checkpoints are switched off");return}
-    const d=Object.fromEntries(new FormData(f));const c=clientById(f.dataset.upsell);
-    btn.disabled=true;
+    const d=Object.fromEntries(new FormData(f));const id=f.dataset.upsell,c=clientById(id);
+    btn.disabled=true;btn.textContent="Saving…";
     try{
-      await api("/api/upsell",{method:"POST",body:{clientId:f.dataset.upsell,clientName:c?c.name:"",nextDate:d.nextDate,offer:d.offer||"",status:d.status||"planned",note:String(d.note||"").slice(0,400)}});
-      toast("Checkpoint saved");f.closest("details").open=false;loadAll(true);
-    }catch(x){toast("Couldn't save: "+x.message)}
-    btn.disabled=false;
+      await api("/api/upsell",{method:"POST",body:{clientId:id,clientName:c?c.name:"",route:d.route||"",offer:String(d.offer||"").trim(),nextDate:d.nextDate||"",status:d.status||"planned",proposal:String(d.proposal||"").trim(),note:String(d.note||"").slice(0,400)}});
+      toast("Saved");UI.editUp[id]=false;loadAll(true);
+    }catch(x){toast("Couldn't save: "+x.message);btn.disabled=false;btn.textContent=label}
   }
 });
 

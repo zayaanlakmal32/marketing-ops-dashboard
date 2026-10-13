@@ -16,7 +16,7 @@ Dashboard for Oshara. Reads Notion live through a small Vercel proxy, so the Not
 ## Setup
 
 1. Share these Notion databases with your integration (••• → Connections):
-   Project Tracker, PM Engine v2 → Projects, PM Engine v2 → Tasks, Strategy Hub → Strategy Board.
+   Project Tracker, PM Engine v2 → Projects, PM Engine v2 → Tasks, Strategy Hub → Strategy Board, Phase Performance Archive.
 2. Import this repo into Vercel (no build settings needed).
 3. Add environment variables in Vercel → Settings → Environment Variables, then redeploy:
 
@@ -29,9 +29,11 @@ Dashboard for Oshara. Reads Notion live through a small Vercel proxy, so the Not
 | `AD_LOG_DS_ID` | No | Turns on the Ads tab saving. Data source ID of the Ad Log database. |
 | `UPSELL_DS_ID` | No | Turns on upsell checkpoint saving. Data source ID of the Upsell Checkpoints database. |
 | `AD_CLIENTS_DS_ID` | No | Turns on ad settings (who runs ads, result type, currency, target). Data source ID of the Ad Clients database. |
+| `BOOKING_URL` | No | Booking link (GHL calendar or Calendly) the Upsell tab's **Book call** button opens. |
 
 ## How clients show up
 
-- **Active clients** come from the Project Tracker (everyone except Stage = Offboarded).
-- **Funnels** show PM Engine projects that have the **Client** column set. Each task needs a **Funnel Stage**.
-- **Briefs** match Strategy Board items to clients by first name.
+- **Every tab uses one list:** clients with a PM Engine project where **Client** is set. Projects that are Paused, Done, Canceled or Archived are hidden.
+- **Funnels:** each task needs a **Funnel Stage**. Clients with no tagged tasks show "No tasks tagged".
+- **Upsell:** route (Win / Client ask / Gap) and offer are suggested from the blocker (6.x) and phase results, and can be edited. Saved to Upsell Checkpoints (Route, Suggested Offer, Next Date = call date, Proposal Link).
+- **Briefs:** Phase 1/2/3 decks and the 90-day goal come from the Phase Performance Archive, plus the current deck from the Project Tracker.
