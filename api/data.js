@@ -74,6 +74,7 @@ module.exports = async (req, res) => {
       type: prop(p, "Project Type"),
       status: prop(p, "Status"),
       deck: prop(p, "Strategy Deck link "),
+      created: (p.created_time || "").slice(0, 10),
       final: prop(p, "Final Link"),
       goal: prop(p, "Client Goal"),
       brief: prop(p, "Client Brief")
