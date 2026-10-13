@@ -2,6 +2,7 @@
 const { DS, queryAll, prop, pid, send, checkKey, fail } = require("../lib/notion");
 
 const dashed = id => id.replace(/^(.{8})(.{4})(.{4})(.{4})(.{12})$/, "$1-$2-$3-$4-$5");
+const HIDDEN_PROJECT_STATUSES = ["Paused", "Done", "Canceled", "Archived"];
 const daysAgo = n => { const d = new Date(); d.setDate(d.getDate() - n); return d.toISOString().slice(0, 10); };
 
 module.exports = async (req, res) => {
@@ -10,7 +11,9 @@ module.exports = async (req, res) => {
   try {
     const [trackerPages, projectPages, boardPages] = await Promise.all([
       queryAll(DS.tracker, { filter: { property: "Stage", select: { does_not_equal: "Offboarded" } } }, 5),
-      queryAll(DS.projects, { filter: { property: "Client", relation: { is_not_empty: true } } }, 5),
+      // Only live funnel projects: Client set, and not Paused / Done / Canceled / Archived.
+      queryAll(DS.projects, { filter: { and: [{ property: "Client", relation: { is_not_empty: true } }].concat(
+        HIDDEN_PROJECT_STATUSES.map(s => ({ property: "Status", status: { does_not_equal: s } }))) } }, 5),
       queryAll(DS.board, { sorts: [{ timestamp: "created_time", direction: "descending" }] }, 4)
     ]);
 
@@ -99,7 +102,10 @@ module.exports = async (req, res) => {
       upsell = {};
       pages.forEach(p => {
         const cid = (prop(p, "Client") || [])[0];
-        if (cid) upsell[cid] = { pageId: pid(p), nextDate: prop(p, "Next Date"), offer: prop(p, "Offer") || "", status: (prop(p, "Status") || "Planned").toLowerCase(), note: prop(p, "Note") || "" };
+        if (cid) upsell[cid] = {
+          pageId: pid(p), nextDate: prop(p, "Next Date"), status: (prop(p, "Status") || "Planned").toLowerCase(), note: prop(p, "Note") || "",
+          route: prop(p, "Route") || "", offer: prop(p, "Suggested Offer") || prop(p, "Offer") || "", proposal: prop(p, "Proposal Link") || ""
+        };
       });
     }
 
@@ -114,7 +120,26 @@ module.exports = async (req, res) => {
       });
     }
 
-    send(res, 200, { clients, projects, tasks, board, ads, upsell, adClients, user: user.email, loadedAt: new Date().toISOString() });
+    // Phase Performance Archive: one row per client per finished phase, with that phase's deck and 90-day goal.
+    // Kept separate so a missing share doesn't break the rest of the dashboard.
+    let archive = null, archiveError = null;
+    try {
+      const pages = await queryAll(process.env.PHASE_ARCHIVE_DS_ID || DS.archive, {}, 3);
+      archive = pages.map(p => ({
+        clientId: (prop(p, "Client") || [])[0] || null,
+        clientName: prop(p, "Client Name") || prop(p, "Name"),
+        stage: prop(p, "Stage"),
+        deck: prop(p, "Strategy Deck"),
+        goal: prop(p, "90 Day Goal"),
+        metric: prop(p, "Monthly Goal Metric"),
+        progress: prop(p, "Progress %"),
+        po: prop(p, "PO Name")
+      })).filter(a => a.clientId);
+    } catch (e) {
+      archiveError = e.code === "object_not_found" ? "Share the Phase Performance Archive with the dashboard's Notion integration (••• → Connections) to show phase decks." : (e.message || "Couldn't read the Phase Performance Archive.");
+    }
+
+    send(res, 200, { clients, projects, tasks, board, ads, upsell, adClients, archive, archiveError, bookingUrl: process.env.BOOKING_URL || null, user: user.email, loadedAt: new Date().toISOString() });
   } catch (e) {
     fail(res, e);
   }
