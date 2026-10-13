@@ -391,11 +391,14 @@ details.later[open]>summary::after{content:" · hide"}
 /* Briefs */
 .bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:var(--gap)}
 .bcard{gap:14px}
+.bcard .deck-list{margin-top:0}
 .goal-box{background:var(--raise);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
 .goal-box span{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
 .goal-box b{font-size:15px;font-weight:600}
 .deck{padding:12px 14px;background:var(--surface)}
 .deck-o{font-size:13px;color:var(--ink-2);font-weight:500}
+.deck-t small{display:block;font-size:11.5px;color:var(--muted);font-weight:400;margin-top:1px}
+.deck-t{white-space:normal}
 .view.enter .frow,.view.enter .ucard,.view.enter .blk,.view.enter .bpill{animation:pop .5s var(--ease) both;animation-delay:calc(var(--i,0) * 45ms + 60ms)}
 @media (max-width:600px){nav.tabs{flex:1 1 100%;order:-1}.pills-row{justify-content:flex-start}.hero-right{width:100%}.bpill{font-size:13px;padding:7px 12px}.panel,.frow,.ucard,.adcard{padding:18px}}
 </style>
@@ -471,7 +474,7 @@ async function loadAll(fresh){
   S.loading=true;S.err.core=null;render();
   try{
     const d=await api("/api/data"+(fresh?"?fresh="+Date.now():""));
-    S.clients=d.clients||[];S.projects=d.projects||[];S.tasks=d.tasks||[];
+    S.clients=d.clients||[];S.projects=d.projects||[];S.tasks=d.tasks||[];S.board=d.board||[];
     S.archive=d.archive||[];S.archiveError=d.archiveError||null;S.bookingUrl=d.bookingUrl||null;
     S.locked=false;S.user=d.user&&d.user!=="open"?d.user:null;
     S.adsOn=Array.isArray(d.ads);S.upsellOn=!!d.upsell;S.adClientsOn=!!d.adClients;
@@ -792,26 +795,58 @@ function goalText(a){
   const m=String(a.metric||"").replace(/^accumulated\s+/i,"").trim().toLowerCase();
   return compact(a.goal)+(m?" "+m:"")+" in 90 days";
 }
+/* Strategy Board has no client relation, so match on whole names:
+   the board's Client Name must equal the client's name or be the start of it ("Vivek" → "Vivek Krishnan"),
+   and must point to exactly one active client. Rows with no Client Name match only if the title holds the full name. */
+const normTok=s=>String(s||"").toLowerCase().replace(/\(.*?\)/g," ").replace(/&/g," and ").replace(/[^a-z0-9\s]/g," ").split(/\s+/).filter(Boolean);
+const startsWith=(a,b)=>b.length>0&&b.length<=a.length&&b.every((t,i)=>a[i]===t);
+const containsSeq=(a,b)=>{if(!b.length||b.length>a.length)return false;for(let i=0;i+b.length<=a.length;i++)if(b.every((t,j)=>a[i+j]===t))return true;return false};
+// "Vivek" ~ "Vivek Krishnan", "Pramod Mudalagiri gowda" ~ "Pramod Mudalagiri", "Dilan Jay" ~ "Dilan Jayasingha"
+function nameMatch(a,b){const[sh,lo]=a.length<=b.length?[a,b]:[b,a];if(!sh.length)return false;
+  return sh.every((t,i)=>t===lo[i]||(i===sh.length-1&&i>0&&t.length>=3&&lo[i].startsWith(t))||(i===0&&sh.length===1&&t.length>=4&&lo[0].startsWith(t)))}
+let _boardMap=null,_boardSrc=null;
+function boardMap(){
+  if(_boardSrc===S.board&&_boardMap)return _boardMap;
+  const map={},cl=S.clients.map(c=>({id:c.id,t:normTok(c.name)})).filter(x=>x.t.length);
+  S.board.forEach(b=>{
+    if(["Style Guide","Ideation"].includes(b.type))return;
+    if(/style guide|brand guid|ideation/i.test(b.title||""))return;
+    const bt=normTok(b.client);let hits=bt.length?cl.filter(c=>nameMatch(c.t,bt)):[];
+    if(!hits.length){const tt=normTok(b.title);hits=cl.filter(c=>(c.t.length>=2||c.t[0].length>=5)&&containsSeq(tt,c.t))}
+    if(hits.length===1)(map[hits[0].id]=map[hits[0].id]||[]).push(b);
+  });
+  _boardSrc=S.board;_boardMap=map;return map;
+}
+function boardFor(c){return (boardMap()[c.id]||[]).slice().sort((a,b)=>(b.created||"")<(a.created||"")?-1:1)}
 function decksFor(c){
   const out=[],seen=new Set();
-  archiveFor(c.id).forEach(a=>{if(a.deck&&!seen.has(a.deck)){seen.add(a.deck);out.push({label:(phaseNum(a.stage)?"Phase "+phaseNum(a.stage):a.stage||"Phase")+" strategy deck",url:a.deck})}});
-  if(c.deck&&!seen.has(c.deck)){const n=phaseOf(c);const has=out.some(d=>n&&d.label.startsWith("Phase "+n+" "));out.push({label:n&&!has?"Phase "+n+" strategy deck":"Current strategy deck",url:c.deck})}
+  const add=(label,url,meta)=>{if(!url||seen.has(url))return;seen.add(url);out.push({label,url,meta})};
+  archiveFor(c.id).forEach(a=>add((phaseNum(a.stage)?"Phase "+phaseNum(a.stage):a.stage||"Phase")+" strategy deck",a.deck,"Phase archive"));
+  // A Phase 1 client's first untagged creative strategy is their Phase 1 deck; keep the board title in the meta line so it can be checked.
+  const p1=phaseOf(c)===1&&!archiveFor(c.id).length?boardFor(c).filter(b=>!phaseNum(b.title)&&b.deck&&(b.type==="Creative Strategy"||!b.type)).slice(-1)[0]:null;
+  boardFor(c).forEach(b=>{
+    if(b===p1){add("Phase 1 strategy deck",b.deck,String(b.title||"").trim()+(b.created?" · "+new Date(b.created+"T00:00:00").toLocaleDateString("en-GB",{month:"short",year:"numeric"}):""));return}
+    const n=phaseNum(b.title);
+    const label=n?"Phase "+n+(b.type==="Ad Strategy"?" ad strategy deck":" strategy deck"):b.type==="Ad Strategy"?"Ad strategy deck":b.type==="Pivot Call"?"Pivot call deck":String(b.title||"Strategy deck").replace(/\s+/g," ").trim();
+    add(label,b.deck,"Strategy Board"+(b.created?" · "+new Date(b.created+"T00:00:00").toLocaleDateString("en-GB",{month:"short",year:"numeric"}):""));
+  });
+  if(c.deck&&!seen.has(c.deck)){const n=phaseOf(c);add(n&&!out.some(d=>d.label.startsWith("Phase "+n+" "))?"Phase "+n+" strategy deck":"Current strategy deck",c.deck,"Project Tracker")}
   return out;
 }
 function viewBriefs(){
   const q=UI.briefQ.trim().toLowerCase();
   const all=funnelClients();
   const list=all.filter(c=>!q||String(c.name).toLowerCase().includes(q));
-  let h=hero("Funnel clients · Phase archive","Briefs",'<label class="f" for="brief-q" style="min-width:240px">Find a client<input id="brief-q" type="search" value="'+esc(UI.briefQ)+'" placeholder="Type a name"></label>');
+  let h=hero("Funnel clients · Phase archive + Strategy Board","Briefs",'<label class="f" for="brief-q" style="min-width:240px">Find a client<input id="brief-q" type="search" value="'+esc(UI.briefQ)+'" placeholder="Type a name"></label>');
   h+=errBanner();
   if(S.archiveError&&!S.loading)h+='<div class="banner info"><span>'+esc(S.archiveError)+' Until then only the current deck from the Project Tracker shows.</span></div>';
   if(!all.length)return h+emptyClients()+footer();
   if(!list.length)return h+'<section class="panel"><div class="empty">No client matches that name.</div></section>'+footer();
   h+='<div class="bgrid">'+list.map(c=>{
-    const arc=archiveFor(c.id),goal=goalText(arc[arc.length-1]),d=decksFor(c),ph=phaseLabel(phaseOf(c));
+    const arc=archiveFor(c.id),d=decksFor(c),ph=phaseLabel(phaseOf(c));const bg=boardFor(c).map(b=>b.goal).find(Boolean);const goal=goalText(arc[arc.length-1])||(bg?String(bg).slice(0,120):null);
     return '<section class="adcard bcard"><div class="card-h"><div><div class="blk-n">'+esc(c.name)+'</div><div class="note">'+esc([c.po&&("PO "+c.po),c.strat&&("Strat "+c.strat)].filter(Boolean).join(" · "))+'</div></div>'+(ph?'<span class="pill">'+ph+'</span>':'')+'</div>'+
-      '<div class="goal-box"><span>90-day goal</span><b>'+esc(goal||"Not in the archive yet")+'</b></div>'+
-      (d.length?'<div class="deck-list">'+d.map(x=>'<a class="deck" href="'+esc(x.url)+'" target="_blank" rel="noopener"><span class="deck-t">'+esc(x.label)+'</span><span class="deck-o">Open</span></a>').join("")+'</div>':'<div class="note">No strategy deck yet.</div>')+'</section>';
+      '<div class="goal-box"><span>90-day goal</span><b>'+esc(goal||"Not set yet")+'</b></div>'+
+      (d.length?'<div class="deck-list">'+d.map(x=>'<a class="deck" href="'+esc(x.url)+'" target="_blank" rel="noopener"><span class="deck-t">'+esc(x.label)+'<small>'+esc(x.meta||"")+'</small></span><span class="deck-o">Open</span></a>').join("")+'</div>':'<div class="note">No strategy deck yet.</div>')+'</section>';
   }).join("")+'</div>';
   return h+footer();
 }
