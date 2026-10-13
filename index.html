@@ -553,7 +553,8 @@ function upsellInfo(c){
 
 /* ads */
 function adSet(cid){return (S.adClients&&S.adClients[cid])||null}
-function runningClients(){return funnelClients().filter(c=>{const s=adSet(c.id);return s&&s.running})}
+// Anyone switched to "Running ads" shows on Ads, even if their funnel project is done or paused.
+function runningClients(){return S.clients.filter(c=>{const s=adSet(c.id);return s&&s.running})}
 function adInfo(cid){
   const set=adSet(cid);
   const logs=S.ads.filter(a=>a.clientId===cid).sort((a,b)=>a.date<b.date?-1:1);
@@ -782,7 +783,7 @@ function viewAds(){
   const off=funnelClients().filter(c=>!(adSet(c.id)&&adSet(c.id).running));
   if(off.length)h+='<details class="panel later-p"'+(UI.offOpen?" open":"")+' id="off-panel"><summary><h2>Not running ads <span class="sub">'+off.length+'</span></h2></summary>'+off.map(c=>'<div class="off-row"><div><b>'+esc(c.name)+'</b><div class="note">'+esc(subLine(c))+'</div></div><button type="button" class="ghost" data-manage="'+c.id+'">'+(UI.manage[c.id]?"Close":"Set up")+'</button></div>'+(UI.manage[c.id]?setForm(c):'')).join("")+'</details>';
   // Recent entries (for fixing mistakes)
-  const ids=new Set(funnelClients().map(c=>c.id));
+  const ids=new Set(funnelClients().concat(runningClients()).map(c=>c.id));
   const recent=S.ads.filter(a=>ids.has(a.clientId)).sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:0).slice(0,30);
   if(recent.length)h+='<details class="panel later-p" id="recent-panel"'+(UI.recentOpen?" open":"")+'><summary><h2>Recent entries <span class="sub">'+recent.length+'</span></h2></summary><div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Client</th><th class="r">Spend</th><th class="r">Results</th><th class="r">Cost / result</th><th>What changed</th><th></th></tr></thead><tbody>'+
     recent.map(a=>'<tr><td>'+fmtDate(a.date)+'</td><td>'+esc(a.clientName)+'</td><td class="r">'+money(a.spend,a.currency)+'</td><td class="r">'+esc(a.results)+'</td><td class="r">'+(a.results>0?money(a.spend/a.results,a.currency):"–")+'</td><td>'+esc(a.note||"")+'</td><td class="r"><button type="button" class="ghost danger" data-del="'+esc(a.id)+'"'+(S.adsOn?"":" disabled")+'>Delete</button></td></tr>').join("")+'</tbody></table></div></details>';
@@ -792,7 +793,7 @@ function viewAds(){
 /* ---------- Briefs ---------- */
 function goalText(a){
   if(!a||a.goal==null)return null;
-  const m=String(a.metric||"").replace(/^accumulated\s+/i,"").trim().toLowerCase();
+  const m=String(a.metric||"").replace(/^accumulated\s+/i,"").trim();
   return compact(a.goal)+(m?" "+m:"")+" in 90 days";
 }
 /* Strategy Board has no client relation, so match on whole names:
