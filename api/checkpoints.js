@@ -23,14 +23,45 @@ async function ghl(path) {
 
 const TITLES = ["dr", "mr", "mrs", "ms", "miss", "prof"];
 const norm = s => String(s || "").toLowerCase().replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(t => t && !TITLES.includes(t));
-const sameName = (a, b) => { const x = norm(a), y = norm(b); if (!x.length || !y.length) return false; const [s, l] = x.length <= y.length ? [x, y] : [y, x]; return s.every((t, i) => t === l[i]); };
+// Forgiving name match: "Sheron De Silva" ~ "Sheron Desilva", "Pramod Mudalagiri" ~ "Pramod Mudalagiri Gowda", "Dr Amila Fernando" ~ "Amila Fernando".
+const sameName = (a, b) => {
+  const x = norm(a), y = norm(b); if (!x.length || !y.length) return false;
+  const [s, l] = x.length <= y.length ? [x, y] : [y, x];
+  if (s.every((t, i) => t === l[i])) return true;
+  const sx = x.join(""), sy = y.join("");
+  if (sx === sy) return true;
+  if (Math.min(sx.length, sy.length) >= 6 && (sx.startsWith(sy) || sy.startsWith(sx))) return true;
+  if (x[0] !== y[0]) return false;
+  const rx = x.slice(1).join(""), ry = y.slice(1).join("");
+  return rx.length >= 3 && ry.length >= 3 && (rx.startsWith(ry) || ry.startsWith(rx));
+};
+const fullName = x => [x.firstName, x.lastName].filter(Boolean).join(" ") || x.contactName || "";
+async function findContacts(loc, name) {
+  const parts = norm(name), seen = {}, out = [];
+  for (const q of [parts.join(" "), parts[0]].filter(Boolean)) {
+    const j = await ghl("/contacts/?locationId=" + encodeURIComponent(loc) + "&query=" + encodeURIComponent(q) + "&limit=20");
+    (j.contacts || []).forEach(c => { if (!seen[c.id]) { seen[c.id] = 1; out.push(c); } });
+    if (out.some(c => sameName(fullName(c), name))) break;
+  }
+  return out;
+}
 const BAD = ["cancelled", "canceled", "noshow", "no_show", "invalid"];
 
 module.exports = async (req, res) => {
   if (!checkKey(req, res)) return;
-  if (req.method !== "POST") return send(res, 405, { error: "method", message: "Use POST." });
   const loc = process.env.GHL_LOCATION_ID;
   if (!process.env.GHL_TOKEN || !loc) return send(res, 400, { error: "not_set_up", message: "GHL isn't connected (GHL_TOKEN / GHL_LOCATION_ID)." });
+  // GET /api/checkpoints?names=Glauco Defendi,Sheron De Silva → shows what GHL has for those names (for fixing matches).
+  if (req.method === "GET") {
+    const names = String(req.query.names || "").split(",").map(n => n.trim()).filter(Boolean).slice(0, 10);
+    const out = {};
+    for (const n of names) {
+      try { out[n] = (await findContacts(loc, n)).slice(0, 8).map(c => ({ ghlName: fullName(c), hasEmail: !!c.email, matches: sameName(fullName(c), n) })); }
+      catch (e) { out[n] = { error: e.message }; }
+    }
+    return send(res, 200, { ok: true, names: out });
+  }
+  if (req.method !== "POST") return send(res, 405, { error: "method", message: "Use POST." });
   const list = (Array.isArray((req.body || {}).clients) ? req.body.clients : [])
     .filter(c => /^[0-9a-f]{32}$/i.test(c.id || "") && c.name).slice(0, 60);
   const key = list.map(c => c.id).sort().join(",");
@@ -48,8 +79,8 @@ module.exports = async (req, res) => {
     for (const c of list) {
       const row = { found: false };
       try {
-        const j = await ghl("/contacts/?locationId=" + encodeURIComponent(loc) + "&query=" + encodeURIComponent(norm(c.name).join(" ")) + "&limit=10");
-        const hits = (j.contacts || []).filter(x => sameName([x.firstName, x.lastName].filter(Boolean).join(" ") || x.contactName, c.name));
+        const hits = (await findContacts(loc, c.name)).filter(x => sameName(fullName(x), c.name))
+          .sort((a, b) => (b.email ? 1 : 0) - (a.email ? 1 : 0)); // prefer the contact that has an email
         if (hits.length) {
           row.found = true;
           const contact = hits[0];
