@@ -32,7 +32,21 @@ module.exports = async (req, res) => {
   const q = String(req.query.q || "Heddi").slice(0, 60);
   await step("contactSample", async () => {
     const j = await ghl("/contacts/?locationId=" + encodeURIComponent(loc) + "&query=" + encodeURIComponent(q) + "&limit=3");
+    out._firstId = (j.contacts || [])[0] && j.contacts[0].id;
     return (j.contacts || []).map(c => ({ name: [c.firstName, c.lastName].filter(Boolean).join(" ") || c.contactName, hasEmail: !!c.email, tags: c.tags || [], dateAdded: c.dateAdded }));
   });
+  // What the checkpoint workflows leave on a contact: tasks and notes.
+  if (out._firstId) {
+    const id = encodeURIComponent(out._firstId);
+    await step("contactTasks", async () => {
+      const j = await ghl("/contacts/" + id + "/tasks");
+      return (j.tasks || []).map(t => ({ title: t.title, due: t.dueDate, done: !!t.completed }));
+    });
+    await step("contactNotes", async () => {
+      const j = await ghl("/contacts/" + id + "/notes");
+      return (j.notes || []).slice(0, 10).map(n => ({ date: n.dateAdded, text: String(n.body || "").replace(/<[^>]+>/g, " ").slice(0, 120) }));
+    });
+  }
+  delete out._firstId;
   send(res, 200, out);
 };
