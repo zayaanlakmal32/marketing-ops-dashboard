@@ -336,6 +336,10 @@ h1{font-size:clamp(30px,4.2vw,46px);font-weight:700;letter-spacing:-.035em;margi
 .dbar{height:8px;border-radius:99px;background:var(--none);overflow:hidden;margin-top:6px}
 .dbar i{display:block;height:100%;border-radius:99px;background:var(--blue)}
 .dbar i.warn{background:var(--warn)} .dbar i.bad{background:var(--bad)} .dbar i.none{background:transparent}
+.cps{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.cp{font-size:11.5px;font-weight:500;padding:2px 8px;border-radius:999px;border:1px solid var(--line-strong);color:var(--muted);white-space:nowrap}
+.cp.sent{border-color:transparent;background:var(--good-soft);color:var(--good)}
+.cp.due{border-color:transparent;background:var(--warn-soft);color:var(--warn);font-weight:600}
 .uoffer{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0}
 .uoffer-t{font-weight:600;font-size:15px;letter-spacing:-.01em}
 .uright{display:flex;flex-direction:column;align-items:flex-end;gap:6px;text-align:right}
@@ -440,7 +444,7 @@ const RESULT_TYPES = ["Leads","Purchases","Bookings","Messages","Results"];
 const COST_LABEL = {Leads:"Cost / lead",Purchases:"Cost / purchase",Bookings:"Cost / booking",Messages:"Cost / message",Results:"Cost / result"};
 
 /* ---------- state ---------- */
-const S = {clients:[],projects:[],tasks:[],archive:[],ads:[],upsell:{},adClients:{},err:{core:null},loading:true,loadedAt:null,adsOn:false,upsellOn:false,adClientsOn:false};
+const S = {ghl:{},clients:[],projects:[],tasks:[],archive:[],ads:[],upsell:{},adClients:{},err:{core:null},loading:true,loadedAt:null,adsOn:false,upsellOn:false,adClientsOn:false};
 const UI = {tab:"today",selCell:null,briefQ:"",manage:{},blkOpen:{},showUntagged:false,editUp:{}};
 try{const t=localStorage.getItem("mo2-tab"); if(t) UI.tab=t;}catch(e){}
 if(/^#(today|funnels|upsell|ads|briefs)$/.test(location.hash)) UI.tab=location.hash.slice(1);
@@ -484,6 +488,14 @@ async function loadAll(fresh){
     S.loadedAt=Date.parse(d.loadedAt)||Date.now();
   }catch(e){if(e&&e.code==="locked"){S.locked=true;S.user=null}else S.err.core={msg:(e&&e.message)||"Couldn't load data from Notion."}}
   S.loading=false;if(UI.animOnLoad){UI.anim=true;UI.animOnLoad=false}render();
+  if(!S.locked&&!S.err.core)loadCheckpoints();
+}
+// GHL strategy call dates (for the day 14 / day 30 / sub-end Slack poll checkpoints). Optional: falls back to the tracker start date.
+async function loadCheckpoints(){
+  const list=funnelClients().map(c=>({id:c.id,name:c.name}));
+  if(!list.length)return;
+  try{const d=await api("/api/checkpoints",{method:"POST",body:{clients:list}});S.ghl=d.clients||{};S.ghlOn=true;render()}
+  catch(e){S.ghlOn=false}
 }
 
 /* ---------- derived ---------- */
@@ -550,6 +562,16 @@ function upsellInfo(c){
   const coming=!closed&&!act&&(!!route||(day!=null&&day>=20));
   return{day,cp,auto,route,offer,reason,closed,closedThisWeek,callBooked,act,coming};
 }
+
+/* checkpoints: GHL "Client Checkpoint & Renewal Reminders" sends Slack polls at day 14, day 30 and 7 days before the 90-day sub ends */
+const CHECKS=[{key:"14",label:"14-day check-in",short:"14d",day:14},{key:"30",label:"30-day check-in",short:"30d",day:30},{key:"end",label:"Sub-end check",short:"Sub end",day:83}];
+function checkpointsFor(c){
+  const g=S.ghl[c.id]||{};const base=g.date||(c.start?c.start.slice(0,10):null);
+  if(!base)return null;
+  const src=g.date?"GHL strategy call "+fmtDate(g.date):"Project Tracker start "+fmtDate(base);
+  return{base,src,points:CHECKS.map(k=>{const date=addDays(base,k.day),d=diff(TODAY,date);return Object.assign({},k,{date,d,state:d<0?"sent":d<=7?"due":"later"})})};
+}
+function relDay(d){return d===0?"today":d===1?"tomorrow":d===-1?"yesterday":d>0?"in "+d+"d":(-d)+"d ago"}
 
 /* ads */
 function adSet(cid){return (S.adClients&&S.adClients[cid])||null}
@@ -665,6 +687,8 @@ function viewToday(){
   h+='</section>';
   // Upsell windows
   h+='<section class="panel"><div class="panel-h"><h2>Upsell windows</h2><a href="#upsell" data-tab-go="upsell">Open Upsell</a></div>'+
+    (()=>{const due=[];fc.forEach(c=>{const cp=checkpointsFor(c);if(cp)cp.points.forEach(p=>{if(p.d>=-2&&p.d<=7)due.push({c,p})})});due.sort((a,b)=>a.p.d-b.p.d);
+      return due.length?'<div class="sub-h" style="margin-top:0">Check-ins due this week</div>'+due.map(({c,p})=>'<div class="uw"><div class="uw-h"><b>'+esc(c.name)+'</b><span class="note'+(p.d>=0&&p.d<=1?' warn-t':'')+'">'+relDay(p.d)+'</span></div><div class="note">'+esc(p.label)+' · Slack poll '+(p.d<0?'sent':'goes out')+' '+fmtDay(p.date)+'</div></div>').join("")+'<div class="sub-h">Upsell windows</div>':''})()+
     (windows.length?windows.map(({c,u})=>'<div class="uw"><div class="uw-h"><b>'+esc(c.name)+'</b><span class="note">'+(u.callBooked?"Call "+fmtDate(u.cp.nextDate):u.day!=null?"Day "+u.day:"")+'</span></div><div class="note">'+esc([u.route,u.offer?"offer "+u.offer:""].filter(Boolean).join(": ")||u.reason||"Window open, no route yet")+'</div></div>').join(""):'<div class="empty">No upsell windows open right now.</div>')+
     '</section></div></div>';
   return h+footer();
@@ -711,7 +735,7 @@ function upRow(c,u){
   else if(u.callBooked)right='<span class="note">Call '+fmtDay(cp.nextDate)+'</span>'+(cp.proposal?'<a class="btn primary" href="'+esc(cp.proposal)+'" target="_blank" rel="noopener">Open proposal</a>':'<button type="button" class="primary" data-edit-up="'+c.id+'">Add proposal</button>');
   else right='<span class="note">No call booked</span>'+(S.bookingUrl?'<a class="btn primary" href="'+esc(S.bookingUrl)+'" target="_blank" rel="noopener">Book call</a>':'<button type="button" class="primary" disabled title="Add BOOKING_URL in Vercel to switch this on">Book call</button>');
   let h='<div class="urow"><div><div class="blk-n">'+esc(c.name)+'</div><div class="note">'+esc([ph,c.po?"PO "+c.po:null].filter(Boolean).join(" · ")||"—")+'</div></div>'+
-    '<div class="uday"><div class="note">'+(u.day==null?"No start date":u.day>90?"Day "+u.day+" · past 90":"Day "+u.day+" of 90")+'</div><div class="dbar"><i class="'+barCls+'" style="width:'+pct+'%"></i></div>'+(u.day!=null&&u.day>=30&&u.day<=37&&!u.closed?'<div class="note warn-t">Day 30: GHL reminder</div>':'')+'</div>'+
+    '<div class="uday"><div class="note">'+(u.day==null?"No start date":u.day>90?"Day "+u.day+" · past 90":"Day "+u.day+" of 90")+'</div><div class="dbar"><i class="'+barCls+'" style="width:'+pct+'%"></i></div>'+(()=>{const cp=checkpointsFor(c);return cp?'<div class="cps" title="Counted from '+esc(cp.src)+'">'+cp.points.map(p=>'<span class="cp '+p.state+'">'+(p.state==="sent"?"✓ ":"")+esc(p.short)+' · '+(p.state==="due"?relDay(p.d):fmtDate(p.date))+'</span>').join("")+'</div>':''})()+'</div>'+
     '<div class="uoffer">'+(u.route?'<span class="pill '+ROUTE_CLS[u.route]+'">'+esc(u.route)+'</span>':'<span class="pill muted">No route yet</span>')+
       '<div class="uoffer-t">'+esc(u.offer||"Pick a route and offer")+'</div>'+(u.reason?'<div class="note">'+esc(u.reason)+'</div>':'')+'</div>'+
     '<div class="uright">'+right+'<button type="button" class="linkbtn" data-edit-up="'+c.id+'">'+(UI.editUp[c.id]?"Close":"Edit")+'</button></div></div>';
@@ -741,7 +765,7 @@ function viewUpsell(){
   const sec=(title,list)=>list.length?'<div class="sec-h">'+title+'</div><div class="ulist">'+list.map(x=>'<section class="ucard">'+upRow(x.c,x.u)+'</section>').join("")+'</div>':'';
   h+=sec("Act now",act)+sec("Coming up",coming)+sec("Closed",closed);
   if(later.length)h+='<details class="later"><summary class="sec-h">Not yet · '+later.length+'</summary><div class="ulist">'+later.map(x=>'<section class="ucard">'+upRow(x.c,x.u)+'</section>').join("")+'</div></details>';
-  h+='<p class="note" style="margin-top:14px">Routes: <b>Win</b> (hit the goal), <b>Client ask</b>, <b>Gap</b> (blocker or missing add-on). Bundles start at $1,000. Route and offer are suggested from the blocker and phase results. Edit to change them.</p>';
+  h+='<p class="note" style="margin-top:14px">Routes: <b>Win</b> (hit the goal), <b>Client ask</b>, <b>Gap</b> (blocker or missing add-on). Bundles start at $1,000. Check-ins (14d, 30d, sub end) are the GHL Slack polls, counted from the strategy call date. Route and offer are suggested from the blocker and phase results. Edit to change them.</p>';
   return h+footer();
 }
 
