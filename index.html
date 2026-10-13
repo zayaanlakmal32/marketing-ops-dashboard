@@ -836,15 +836,16 @@ function decksFor(c){
 }
 function viewBriefs(){
   const q=UI.briefQ.trim().toLowerCase();
-  const all=funnelClients();
+  // Briefs shows every active client in the Project Tracker (not just funnel clients).
+  const all=S.clients.slice().sort((a,b)=>String(a.name).localeCompare(String(b.name)));
   const list=all.filter(c=>!q||String(c.name).toLowerCase().includes(q));
-  let h=hero("Funnel clients · Phase archive + Strategy Board","Briefs",'<label class="f" for="brief-q" style="min-width:240px">Find a client<input id="brief-q" type="search" value="'+esc(UI.briefQ)+'" placeholder="Type a name"></label>');
+  let h=hero("All active clients · Phase archive + Strategy Board","Briefs",'<label class="f" for="brief-q" style="min-width:240px">Find a client<input id="brief-q" type="search" value="'+esc(UI.briefQ)+'" placeholder="Type a name"></label>');
   h+=errBanner();
   if(S.archiveError&&!S.loading)h+='<div class="banner info"><span>'+esc(S.archiveError)+' Until then only the current deck from the Project Tracker shows.</span></div>';
   if(!all.length)return h+emptyClients()+footer();
   if(!list.length)return h+'<section class="panel"><div class="empty">No client matches that name.</div></section>'+footer();
   h+='<div class="bgrid">'+list.map(c=>{
-    const arc=archiveFor(c.id),d=decksFor(c),ph=phaseLabel(phaseOf(c));const bg=boardFor(c).map(b=>b.goal).find(Boolean);const goal=goalText(arc[arc.length-1])||(bg?String(bg).slice(0,120):null);
+    const arc=archiveFor(c.id),d=decksFor(c),ph=phaseLabel(phaseOf(c))||c.stage||null;const bg=boardFor(c).map(b=>b.goal).find(Boolean);const goal=goalText(arc[arc.length-1])||(bg?String(bg).slice(0,120):null);
     return '<section class="adcard bcard"><div class="card-h"><div><div class="blk-n">'+esc(c.name)+'</div><div class="note">'+esc([c.po&&("PO "+c.po),c.strat&&("Strat "+c.strat)].filter(Boolean).join(" · "))+'</div></div>'+(ph?'<span class="pill">'+ph+'</span>':'')+'</div>'+
       '<div class="goal-box"><span>90-day goal</span><b>'+esc(goal||"Not set yet")+'</b></div>'+
       (d.length?'<div class="deck-list">'+d.map(x=>'<a class="deck" href="'+esc(x.url)+'" target="_blank" rel="noopener"><span class="deck-t">'+esc(x.label)+'<small>'+esc(x.meta||"")+'</small></span><span class="deck-o">Open</span></a>').join("")+'</div>':'<div class="note">No strategy deck yet.</div>')+'</section>';
