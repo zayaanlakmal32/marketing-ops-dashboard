@@ -733,7 +733,7 @@ function upRow(c,u){
   let right;
   if(u.closed)right='<span class="note">'+(cp.status==="won"?"Won":"Declined")+(cp.nextDate?" · "+fmtDate(cp.nextDate):"")+'</span>'+(cp.proposal?'<a class="btn primary" href="'+esc(cp.proposal)+'" target="_blank" rel="noopener">Open proposal</a>':'');
   else if(u.callBooked)right='<span class="note">Call '+fmtDay(cp.nextDate)+'</span>'+(cp.proposal?'<a class="btn primary" href="'+esc(cp.proposal)+'" target="_blank" rel="noopener">Open proposal</a>':'<button type="button" class="primary" data-edit-up="'+c.id+'">Add proposal</button>');
-  else right='<span class="note">No call booked</span>'+(S.bookingUrl?'<a class="btn primary" href="'+esc(S.bookingUrl)+'" target="_blank" rel="noopener">Book call</a>':'<button type="button" class="primary" disabled title="Add BOOKING_URL in Vercel to switch this on">Book call</button>');
+  else right='<span class="note">No call booked</span>'+emailBtn(c,u);
   let h='<div class="urow"><div><div class="blk-n">'+esc(c.name)+'</div><div class="note">'+esc([ph,c.po?"PO "+c.po:null].filter(Boolean).join(" · ")||"—")+'</div></div>'+
     '<div class="uday"><div class="note">'+(u.day==null?"No start date":u.day>90?"Day "+u.day+" · past 90":"Day "+u.day+" of 90")+'</div><div class="dbar"><i class="'+barCls+'" style="width:'+pct+'%"></i></div>'+(()=>{const cp=checkpointsFor(c);return cp?'<div class="cps" title="Counted from '+esc(cp.src)+'">'+cp.points.map(p=>'<span class="cp '+p.state+'">'+(p.state==="sent"?"✓ ":"")+esc(p.short)+' · '+(p.state==="due"?relDay(p.d):fmtDate(p.date))+'</span>').join("")+'</div>':''})()+'</div>'+
     '<div class="uoffer">'+(u.route?'<span class="pill '+ROUTE_CLS[u.route]+'">'+esc(u.route)+'</span>':'<span class="pill muted">No route yet</span>')+
@@ -750,6 +750,16 @@ function upRow(c,u){
       '<div class="form-btns"><button type="submit" class="primary"'+(S.upsellOn?"":" disabled")+'>Save</button>'+(u.cp?'<button type="button" class="ghost danger" data-clear="'+c.id+'"'+(S.upsellOn?"":" disabled")+'>Remove checkpoint</button>':'')+'</div></form>';
   }
   return h;
+}
+// "Book call" opens a Gmail draft to the client (email comes from their GHL contact), per Oshara.
+function emailBtn(c,u){
+  const em=(S.ghl[c.id]||{}).email;
+  if(!em)return '<button type="button" class="primary" disabled title="'+(S.ghlOn?"No email on this client's GHL contact":"Loading email from GHL…")+'">Book call</button>';
+  const first=String(c.name||"").split(/\s+/)[0];
+  const subject="Quick call about your next steps";
+  const body="Hi "+first+",\n\nHope you're well! I'd love to jump on a quick call to go through how things are tracking"+(u.offer?" and talk about "+u.offer.toLowerCase():"")+".\n\nWhat time works for you this week?\n\nThanks,\n";
+  const href="https://mail.google.com/mail/?view=cm&fs=1&to="+encodeURIComponent(em)+"&su="+encodeURIComponent(subject)+"&body="+encodeURIComponent(body);
+  return '<a class="btn primary" href="'+esc(href)+'" target="_blank" rel="noopener" title="Email '+esc(em)+'">Book call</a>';
 }
 function viewUpsell(){
   const rows=funnelClients().map(c=>({c,u:upsellInfo(c)}));
